@@ -13,6 +13,11 @@ import { execute as viewCommand } from "./commands/view";
 import dotenv from "dotenv";
 dotenv.config();
 
+export const clientId = process.env.CLIENT_ID!;
+export const token = process.env.DISCORD_TOKEN!;
+export const guildId = process.env.GUILD_ID!;
+
+
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.once("ready", () => {
