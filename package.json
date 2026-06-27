@@ -1,0 +1,23 @@
+{
+  "name": "footbot",
+  "version": "0.0.0.1-alpha",
+  "description": "Discord bot for roster and event management with select menus and embeds",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "ts-node index.ts",
+    "build": "tsc",
+    "deploy-commands": "ts-node deploy-commands.ts"
+  },
+  "author": "Footdablit2310",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
