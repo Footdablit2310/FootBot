@@ -1,4 +1,12 @@
 📝 Bot Development To‑Do List
+0. Recreate old stuff
+    - /config
+    - /croster
+    - /cevent
+    - /droster
+    - /devent
+    - /eroster
+    - /eevent
 1. Add new roster commands
     - /aroster → Add a member to a roster.
         - Parameters: rosterId, userId, position (e.g. Captain, P1, Substitute).
