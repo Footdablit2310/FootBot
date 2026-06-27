@@ -7,7 +7,7 @@
     "start": "node dist/index.js",
     "dev": "ts-node index.ts",
     "build": "tsc",
-    "deploy-commands": "ts-node deploy-commands.ts"
+    "register": "ts-node register.ts"
   },
   "author": "Footdablit2310",
   "license": "MIT",

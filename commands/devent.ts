@@ -1,35 +1,19 @@
-import { ChatInputCommandInteraction } from "discord.js";
-import fs from "fs";
-import { getGuildData, setGuildData } from "../utils/guildData";
-import { ValueIsNullError } from "../utils/nullError";
+import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { updateGuildData } from "../utils/guildData";
 
-export async function devent(interaction: ChatInputCommandInteraction) {
-  const eventsFile = "./data/events.json";
-  const eventsData = JSON.parse(fs.readFileSync(eventsFile, "utf8"));
+export const data = new SlashCommandBuilder()
+  .setName("devent")
+  .setDescription("Delete an event")
+  .addStringOption(opt =>
+    opt.setName("id").setDescription("Event ID").setRequired(true)
+  );
 
-  const eventId = interaction.options.getString("id", true);
-  const index = eventsData.events.findIndex((e: any) => e.id === eventId);
+export async function execute(interaction: ChatInputCommandInteraction) {
+  const id = interaction.options.getString("id", true);
 
-  if (index === -1) {
-    await interaction.reply({ content: `❌ Event not found`, ephemeral: true });
-    return;
-  }
+  updateGuildData(interaction.guildId!, data => {
+    delete data.events![id];
+  });
 
-  const removed = eventsData.events.splice(index, 1)[0];
-  fs.writeFileSync(eventsFile, JSON.stringify(eventsData, null, 2));
-
-  await interaction.reply({ content: `🗑️ Deleted event **${removed.title}**`, ephemeral: true });
-}
-export async function execute(interaction:ChatInputCommandInteraction) {
-  const guildId = interaction.guildId;
-  const eventName = interaction.options.getString("name", true);
-  if(guildId == null){
-    throw new ValueIsNullError()
-  }
-
-  const guildData = getGuildData(guildId);
-  delete guildData.events![eventName];
-
-  setGuildData(guildId, guildData);
-  await interaction.reply(`🗑️ Event '${eventName}' deleted for this guild.`);
+  await interaction.reply(`🗑️ Event **${id}** deleted.`);
 }

@@ -1,23 +1,31 @@
-import { ChatInputCommandInteraction } from "discord.js";
-import fs from "fs";
-import { getGuildData, setGuildData } from "../utils/guildData";
-import { ValueIsNullError } from "../utils/nullError";
+import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { updateGuildData } from "../utils/guildData";
 
-export async function execute(interaction:ChatInputCommandInteraction) {
-  const guildId = interaction.guildId;
-  const rosterName = interaction.options.getString("name", true);
-  const newCaptain = interaction.options.getString("captain");
-  if(guildId == null){
-    throw new ValueIsNullError()
-  }
+export const data = new SlashCommandBuilder()
+  .setName("eroster")
+  .setDescription("Edit a roster")
+  .addStringOption(opt =>
+    opt.setName("id").setDescription("Roster ID").setRequired(true)
+  )
+  .addStringOption(opt =>
+    opt.setName("name").setDescription("New name").setRequired(false)
+  )
+  .addRoleOption(opt =>
+    opt.setName("assignrole").setDescription("New role").setRequired(false)
+  );
 
-  const guildData = getGuildData(guildId);
-  if (!guildData.rosters![rosterName]) {
-    return interaction.reply(`Roster '${rosterName}' not found.`);
-  }
+export async function execute(interaction: ChatInputCommandInteraction) {
+  const id = interaction.options.getString("id", true);
+  const newName = interaction.options.getString("name");
+  const newRole = interaction.options.getRole("assignrole");
 
-  guildData.rosters![rosterName].Captain = newCaptain;
-  setGuildData(guildId, guildData);
+  updateGuildData(interaction.guildId!, data => {
+    const roster = data.rosters![id];
+    if (roster) {
+      if (newName) roster.name = newName;
+      if (newRole) roster.roleId = newRole.id;
+    }
+  });
 
-  await interaction.reply(`✏️ Roster '${rosterName}' updated for this guild.`);
+  await interaction.reply(`✏️ Roster **${id}** updated.`);
 }

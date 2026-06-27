@@ -1,23 +1,26 @@
-import { ChatInputCommandInteraction } from "discord.js";
-import fs from "fs";
-import { getGuildData, setGuildData } from "../utils/guildData";
-import { ValueIsNullError } from "../utils/nullError";
+import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { updateGuildData } from "../utils/guildData";
 
-export async function execute(interaction:ChatInputCommandInteraction) {
-  const guildId = interaction.guildId;
-  const eventName = interaction.options.getString("name", true);
-  const discordEventId = interaction.options.getString("discord_event_id", true);4
-  if(guildId == null){
-    throw new ValueIsNullError()
-  }
+export const data = new SlashCommandBuilder()
+  .setName("levent")
+  .setDescription("Link a Discord event")
+  .addStringOption(opt =>
+    opt.setName("id").setDescription("FootBot event ID").setRequired(true)
+  )
+  .addStringOption(opt =>
+    opt.setName("discordeventid").setDescription("Discord event ID").setRequired(true)
+  );
 
-  const guildData = getGuildData(guildId);
-  if (!guildData.events![eventName]) {
-    return interaction.reply(`Event '${eventName}' not found.`);
-  }
+export async function execute(interaction: ChatInputCommandInteraction) {
+  const id = interaction.options.getString("id", true);
+  const discordEventId = interaction.options.getString("discordeventid", true);
 
-  guildData.events![eventName].linkedDiscordEventId = discordEventId;
-  setGuildData(guildId, guildData);
+  updateGuildData(interaction.guildId!, data => {
+    const event = data.events![id];
+    if (event) {
+      event.discordEventId = discordEventId;
+    }
+  });
 
-  await interaction.reply(`🔗 Event '${eventName}' linked to Discord event ${discordEventId}.`);
+  await interaction.reply(`🔗 Linked FootBot event **${id}** to Discord event **${discordEventId}**.`);
 }

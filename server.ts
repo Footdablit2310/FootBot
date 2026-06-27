@@ -1,11 +1,13 @@
 import express from "express";
-import { clientId } from "./index";
+import dotenv from "dotenv";
+
+dotenv.config()
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Invite link (replace with your bot’s client ID)
-const inviteUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&scope=bot%20applications.commands&permissions=8`;
+const inviteUrl = `https://discord.com/oauth2/authorize?client_id=${process.env.CLIENT_ID}&scope=bot%20applications.commands&permissions=8`;
 
 app.get("/", (_, res) => {
   res.send(`

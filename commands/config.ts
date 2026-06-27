@@ -1,18 +1,39 @@
-import { ChatInputCommandInteraction } from "discord.js";
-import fs from "fs";
-import { getGuildData, setGuildData } from "../utils/guildData";
-import { ValueIsNullError } from "../utils/nullError";
+import {
+  SlashCommandBuilder,
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  ActionRowBuilder,
+  StringSelectMenuBuilder
+} from "discord.js";
+import { getGuildData } from "../utils/guildData";
 
-export async function execute(interaction:ChatInputCommandInteraction) {
-  const guildId = interaction.guildId;
-  const key = interaction.options.getString("key", true);
-  const value = interaction.options.getString("value", true);
-  if(guildId == null){
-    throw new ValueIsNullError()
-  }
-  const guildData = getGuildData(guildId);
-  guildData.config![key] = value;
+export const data = new SlashCommandBuilder()
+  .setName("config")
+  .setDescription("View and update bot config");
 
-  setGuildData(guildId, guildData);
-  await interaction.reply(`⚙️ Config '${key}' set to '${value}' for this guild.`);
+export async function execute(interaction: ChatInputCommandInteraction) {
+  const guildData = getGuildData(interaction.guildId!);
+
+  const embed = new EmbedBuilder()
+    .setTitle("⚙️ Bot Configuration")
+    .setDescription("Current settings")
+    .addFields(
+      { name: "Ping Minutes Before Event", value: guildData.config?.pingMinutesBefore?.toString() ?? "15", inline: true },
+      { name: "Admin Role ID", value: guildData.config?.adminRoleId ?? "Not set", inline: true },
+      { name: "Event Channel ID", value: guildData.config?.eventChannelId ?? "Not set", inline: true }
+    )
+    .setColor(0x3498db);
+
+  const selectMenu = new StringSelectMenuBuilder()
+    .setCustomId("config_select")
+    .setPlaceholder("Choose a config key to edit")
+    .addOptions([
+      { label: "Ping Minutes Before Event", value: "pingMinutesBefore" },
+      { label: "Admin Role ID", value: "adminRoleId" },
+      { label: "Event Channel ID", value: "eventChannelId" }
+    ]);
+
+  const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu);
+
+  await interaction.reply({ embeds: [embed], components: [row] });
 }

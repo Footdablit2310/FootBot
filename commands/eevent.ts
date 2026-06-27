@@ -1,24 +1,31 @@
-import { ChatInputCommandInteraction } from "discord.js";
-import fs from "fs";
-import { getGuildData, setGuildData } from "../utils/guildData";
-import { ValueIsNullError } from "../utils/nullError";
+import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { updateGuildData } from "../utils/guildData";
 
-export async function execute(interaction:ChatInputCommandInteraction) {
-  const guildId = interaction.guildId;
-  const eventName = interaction.options.getString("name", true);
-  const newDate = interaction.options.getString("date");
-  if(guildId == null){
-    throw new ValueIsNullError()
-  }
+export const data = new SlashCommandBuilder()
+  .setName("eevent")
+  .setDescription("Edit an event")
+  .addStringOption(opt =>
+    opt.setName("id").setDescription("Event ID").setRequired(true)
+  )
+  .addStringOption(opt =>
+    opt.setName("title").setDescription("New title").setRequired(false)
+  )
+  .addStringOption(opt =>
+    opt.setName("time").setDescription("New time (YYYY-MM-DD HH:mm)").setRequired(false)
+  );
 
-  const guildData = getGuildData(guildId);
-  if (!guildData.events![eventName]) {
-    return interaction.reply(`Event '${eventName}' not found.`);
-  }
-  
+export async function execute(interaction: ChatInputCommandInteraction) {
+  const id = interaction.options.getString("id", true);
+  const newTitle = interaction.options.getString("title");
+  const newTime = interaction.options.getString("time");
 
-  guildData.events![eventName].date = newDate;
-  setGuildData(guildId, guildData);
+  updateGuildData(interaction.guildId!, data => {
+    const event = data.events![id];
+    if (event) {
+      if (newTitle) event.title = newTitle;
+      if (newTime) event.dateUnix = Math.floor(new Date(newTime).getTime() / 1000);
+    }
+  });
 
-  await interaction.reply(`✏️ Event '${eventName}' updated for this guild.`);
+  await interaction.reply(`✏️ Event **${id}** updated.`);
 }

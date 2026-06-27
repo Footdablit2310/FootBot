@@ -1,18 +1,19 @@
-import { ChatInputCommandInteraction } from "discord.js";
-import fs from "fs";
-import { getGuildData, setGuildData } from "../utils/guildData";
-import { ValueIsNullError } from "../utils/nullError";
+import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { updateGuildData } from "../utils/guildData";
 
-export async function execute(interaction:ChatInputCommandInteraction) {
-  const guildId = interaction.guildId;
-  const rosterName = interaction.options.getString("name", true);
-  if(guildId == null){
-    throw new ValueIsNullError()
-  }
+export const data = new SlashCommandBuilder()
+  .setName("droster")
+  .setDescription("Delete a roster")
+  .addStringOption(opt =>
+    opt.setName("id").setDescription("Roster ID").setRequired(true)
+  );
 
-  const guildData = getGuildData(guildId);
-  delete guildData.rosters![rosterName];
+export async function execute(interaction: ChatInputCommandInteraction) {
+  const id = interaction.options.getString("id", true);
 
-  setGuildData(guildId, guildData);
-  await interaction.reply(`🗑️ Roster '${rosterName}' deleted for this guild.`);
+  updateGuildData(interaction.guildId!, data => {
+    delete data.rosters![id];
+  });
+
+  await interaction.reply(`🗑️ Roster **${id}** deleted.`);
 }

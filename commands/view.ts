@@ -1,67 +1,44 @@
-import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from "discord.js";
+import { SlashCommandBuilder, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { getGuildData } from "../utils/guildData";
-import { ValueIsNullError } from "../utils/nullError";
 
 export const data = new SlashCommandBuilder()
   .setName("view")
-  .setDescription("View rosters or events")
+  .setDescription("View roster or event")
   .addStringOption(opt =>
-    opt.setName("type")
-      .setDescription("Choose what to view")
-      .setRequired(true)
-      .addChoices(
-        { name: "roster", value: "roster" },
-        { name: "event", value: "event" },
-        { name: "all", value: "all" }
-      )
-  )
-  .addStringOption(opt =>
-    opt.setName("name")
-      .setDescription("Name of roster/event (optional)")
-      .setRequired(false)
+    opt.setName("id").setDescription("Roster/Event ID").setRequired(true)
   );
 
-export async function execute(interaction:ChatInputCommandInteraction) {
-  const guildId = interaction.guildId;
-  const type = interaction.options.getString("type", true);
-  const name = interaction.options.getString("name");
-  if (guildId==null) {
-    throw new ValueIsNullError()
-  }
-  
-  const guildData = getGuildData(guildId);
+export async function execute(interaction: ChatInputCommandInteraction) {
+  const id = interaction.options.getString("id", true);
+  const guildData = getGuildData(interaction.guildId!);
 
-  let embed = new EmbedBuilder().setColor(0x00AE86);
+  const roster = guildData.rosters?.[id];
+  const event = guildData.events?.[id];
 
-  if (type === "roster") {
-    if (name) {
-      const roster = guildData.rosters?.[name];
-      if (!roster) return interaction.reply({ content: `Roster '${name}' not found.`, ephemeral: true });
-
-      embed.setTitle(`Roster: ${name}`).setDescription(JSON.stringify(roster, null, 2));
-    } else {
-      embed.setTitle("All Rosters").setDescription(Object.keys(guildData.rosters || {}).join(", ") || "None");
-    }
-  }
-
-  else if (type === "event") {
-    if (name) {
-      const event = guildData.events?.[name];
-      if (!event) return interaction.reply({ content: `Event '${name}' not found.`, ephemeral: true });
-
-      embed.setTitle(`Event: ${name}`).setDescription(JSON.stringify(event, null, 2));
-    } else {
-      embed.setTitle("All Events").setDescription(Object.keys(guildData.events || {}).join(", ") || "None");
-    }
-  }
-
-  else if (type === "all") {
-    embed.setTitle("Guild Data Overview")
+  if (roster) {
+    const embed = new EmbedBuilder()
+      .setTitle(`📋 Roster: ${roster.name}`)
       .addFields(
-        { name: "Rosters", value: Object.keys(guildData.rosters || {}).join(", ") || "None", inline: true },
-        { name: "Events", value: Object.keys(guildData.events || {}).join(", ") || "None", inline: true }
+        { name: "ID", value: roster.id },
+        { name: "Role", value: roster.roleId ? `<@&${roster.roleId}>` : "None" },
+        { name: "Created By", value: `<@${roster.createdBy}>` }
       );
+    await interaction.reply({ embeds: [embed] });
+    return;
   }
 
-  await interaction.reply({ embeds: [embed], ephemeral: false });
+  if (event) {
+    const embed = new EmbedBuilder()
+      .setTitle(`📅 Event: ${event.title}`)
+      .addFields(
+        { name: "ID", value: event.id },
+        { name: "Time", value: `<t:${event.dateUnix}:F>` },
+        { name: "Roster", value: event.rosterId ?? "None" },
+        { name: "Created By", value: `<@${event.createdBy}>` }
+      );
+    await interaction.reply({ embeds: [embed] });
+    return;
+  }
+
+  await interaction.reply(`❌ No roster or event found with ID **${id}**.`);
 }
