@@ -1,20 +1,24 @@
-import { ChatInputCommandInteraction } from "discord.js";
-import fs from "fs";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { getGuildData, setGuildData } from "../utils/guildData";
+import { ValueIsNullError } from "../utils/nullError";
 
-export async function croster(interaction: ChatInputCommandInteraction) {
-  const rostersFile = "./data/rosters.json";
-  const rostersData = JSON.parse(fs.readFileSync(rostersFile, "utf8"));
+export const data = new SlashCommandBuilder()
+  .setName("croster")
+  .setDescription("Create a roster")
+  .addStringOption(opt =>
+    opt.setName("name").setDescription("Roster name").setRequired(true)
+  );
 
-  const newRoster = {
-    id: Date.now().toString(),
-    name: `Roster-${Date.now()}`,
-    members: {},
-    roles: {},
-    locFallbackRole: null
-  };
+export async function execute(interaction:ChatInputCommandInteraction) {
+  const guildId = interaction.guildId;
+  const rosterName = interaction.options.getString("name", true);
+  if(guildId == null){
+    throw new ValueIsNullError()
+  }
 
-  rostersData.rosters.push(newRoster);
-  fs.writeFileSync(rostersFile, JSON.stringify(rostersData, null, 2));
+  const guildData = getGuildData(guildId);
+  guildData.rosters![rosterName] = { createdAt: Date.now() };
 
-  await interaction.reply({ content: `✅ Created roster **${newRoster.name}**`, ephemeral: true });
+  setGuildData(guildId, guildData);
+  await interaction.reply(`✅ Roster '${rosterName}' created for this guild.`);
 }

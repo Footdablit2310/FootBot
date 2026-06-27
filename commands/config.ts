@@ -1,15 +1,18 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import fs from "fs";
+import { getGuildData, setGuildData } from "../utils/guildData";
+import { ValueIsNullError } from "../utils/nullError";
 
-export async function config(interaction: ChatInputCommandInteraction) {
-  const configFile = "./data/config.json";
-  const configData = JSON.parse(fs.readFileSync(configFile, "utf8"));
-
+export async function execute(interaction:ChatInputCommandInteraction) {
+  const guildId = interaction.guildId;
   const key = interaction.options.getString("key", true);
   const value = interaction.options.getString("value", true);
+  if(guildId == null){
+    throw new ValueIsNullError()
+  }
+  const guildData = getGuildData(guildId);
+  guildData.config![key] = value;
 
-  configData[key] = value;
-  fs.writeFileSync(configFile, JSON.stringify(configData, null, 2));
-
-  await interaction.reply({ content: `⚙️ Updated config: ${key} = ${value}`, ephemeral: true });
+  setGuildData(guildId, guildData);
+  await interaction.reply(`⚙️ Config '${key}' set to '${value}' for this guild.`);
 }

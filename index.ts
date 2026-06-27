@@ -1,13 +1,13 @@
 import { Client, GatewayIntentBits, Interaction } from "discord.js";
 import { routeInteraction } from "./interactionRouter";
-import { croster } from "./commands/croster";
-import { droster } from "./commands/droster";
-import { eroster } from "./commands/eroster";
-import { config } from "./commands/config";
-import { cevent } from "./commands/cevent";
-import { devent } from "./commands/devent";
-import { eevent } from "./commands/eevent";
-import { levent } from "./commands/levent";
+import { execute as croster } from "./commands/croster";
+import { execute as droster } from "./commands/droster";
+import { execute as eroster } from "./commands/eroster";
+import { execute as config} from "./commands/config";
+import { execute as cevent} from "./commands/cevent";
+import { execute as eevent} from "./commands/eevent";
+import { execute as devent} from "./commands/devent";
+import { execute as levent} from "./commands/levent";
 import { execute as viewCommand } from "./commands/view";
 
 import dotenv from "dotenv";

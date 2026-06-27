@@ -1,20 +1,18 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import fs from "fs";
+import { getGuildData, setGuildData } from "../utils/guildData";
+import { ValueIsNullError } from "../utils/nullError";
 
-export async function droster(interaction: ChatInputCommandInteraction) {
-  const rostersFile = "./data/rosters.json";
-  const rostersData = JSON.parse(fs.readFileSync(rostersFile, "utf8"));
-
-  const rosterId = interaction.options.getString("id", true);
-  const index = rostersData.rosters.findIndex((r: any) => r.id === rosterId);
-
-  if (index === -1) {
-    await interaction.reply({ content: `❌ Roster not found`, ephemeral: true });
-    return;
+export async function execute(interaction:ChatInputCommandInteraction) {
+  const guildId = interaction.guildId;
+  const rosterName = interaction.options.getString("name", true);
+  if(guildId == null){
+    throw new ValueIsNullError()
   }
 
-  const removed = rostersData.rosters.splice(index, 1)[0];
-  fs.writeFileSync(rostersFile, JSON.stringify(rostersData, null, 2));
+  const guildData = getGuildData(guildId);
+  delete guildData.rosters![rosterName];
 
-  await interaction.reply({ content: `🗑️ Deleted roster **${removed.name}**`, ephemeral: true });
+  setGuildData(guildId, guildData);
+  await interaction.reply(`🗑️ Roster '${rosterName}' deleted for this guild.`);
 }

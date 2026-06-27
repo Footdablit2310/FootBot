@@ -1,21 +1,23 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import fs from "fs";
+import { getGuildData, setGuildData } from "../utils/guildData";
+import { ValueIsNullError } from "../utils/nullError";
 
-export async function eroster(interaction: ChatInputCommandInteraction) {
-  const rostersFile = "./data/rosters.json";
-  const rostersData = JSON.parse(fs.readFileSync(rostersFile, "utf8"));
-
-  const rosterId = interaction.options.getString("id", true);
-  const newName = interaction.options.getString("name", true);
-
-  const roster = rostersData.rosters.find((r: any) => r.id === rosterId);
-  if (!roster) {
-    await interaction.reply({ content: `❌ Roster not found`, ephemeral: true });
-    return;
+export async function execute(interaction:ChatInputCommandInteraction) {
+  const guildId = interaction.guildId;
+  const rosterName = interaction.options.getString("name", true);
+  const newCaptain = interaction.options.getString("captain");
+  if(guildId == null){
+    throw new ValueIsNullError()
   }
 
-  roster.name = newName;
-  fs.writeFileSync(rostersFile, JSON.stringify(rostersData, null, 2));
+  const guildData = getGuildData(guildId);
+  if (!guildData.rosters![rosterName]) {
+    return interaction.reply(`Roster '${rosterName}' not found.`);
+  }
 
-  await interaction.reply({ content: `✏️ Renamed roster to **${newName}**`, ephemeral: true });
+  guildData.rosters![rosterName].Captain = newCaptain;
+  setGuildData(guildId, guildData);
+
+  await interaction.reply(`✏️ Roster '${rosterName}' updated for this guild.`);
 }

@@ -1,21 +1,23 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import fs from "fs";
+import { getGuildData, setGuildData } from "../utils/guildData";
+import { ValueIsNullError } from "../utils/nullError";
 
-export async function levent(interaction: ChatInputCommandInteraction) {
-  const eventsFile = "./data/events.json";
-  const eventsData = JSON.parse(fs.readFileSync(eventsFile, "utf8"));
-
-  const eventId = interaction.options.getString("id", true);
-  const discordEventId = interaction.options.getString("discordEventId", true);
-
-  const event = eventsData.events.find((e: any) => e.id === eventId);
-  if (!event) {
-    await interaction.reply({ content: `❌ Event not found`, ephemeral: true });
-    return;
+export async function execute(interaction:ChatInputCommandInteraction) {
+  const guildId = interaction.guildId;
+  const eventName = interaction.options.getString("name", true);
+  const discordEventId = interaction.options.getString("discord_event_id", true);4
+  if(guildId == null){
+    throw new ValueIsNullError()
   }
 
-  event.linkedDiscordEventId = discordEventId;
-  fs.writeFileSync(eventsFile, JSON.stringify(eventsData, null, 2));
+  const guildData = getGuildData(guildId);
+  if (!guildData.events![eventName]) {
+    return interaction.reply(`Event '${eventName}' not found.`);
+  }
 
-  await interaction.reply({ content: `🔗 Linked event **${event.title}** to Discord event ${discordEventId}`, ephemeral: true });
+  guildData.events![eventName].linkedDiscordEventId = discordEventId;
+  setGuildData(guildId, guildData);
+
+  await interaction.reply(`🔗 Event '${eventName}' linked to Discord event ${discordEventId}.`);
 }

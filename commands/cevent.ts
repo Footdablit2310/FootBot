@@ -1,21 +1,18 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import fs from "fs";
+import { getGuildData, setGuildData } from "../utils/guildData";
+import { ValueIsNullError } from "../utils/nullError";
 
-export async function cevent(interaction: ChatInputCommandInteraction) {
-  const eventsFile = "./data/events.json";
-  const eventsData = JSON.parse(fs.readFileSync(eventsFile, "utf8"));
+export async function execute(interaction:ChatInputCommandInteraction) {
+  const guildId = interaction.guildId;
+  const eventName = interaction.options.getString("name", true);
+  if (guildId==null) {
+    throw new ValueIsNullError()
+  }
 
-  const newEvent = {
-    id: Date.now().toString(),
-    title: interaction.options.getString("title", true),
-    dateUnix: Math.floor(Date.now() / 1000),
-    rosterId: null,
-    createdBy: interaction.user.id,
-    linkedDiscordEventId: null
-  };
+  const guildData = getGuildData(guildId);
+  guildData.events![eventName] = { createdAt: Date.now() };
 
-  eventsData.events.push(newEvent);
-  fs.writeFileSync(eventsFile, JSON.stringify(eventsData, null, 2));
-
-  await interaction.reply({ content: `📅 Created event **${newEvent.title}**`, ephemeral: true });
+  setGuildData(guildId, guildData);
+  await interaction.reply(`📅 Event '${eventName}' created for this guild.`);
 }

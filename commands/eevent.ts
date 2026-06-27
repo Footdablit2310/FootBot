@@ -1,21 +1,24 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import fs from "fs";
+import { getGuildData, setGuildData } from "../utils/guildData";
+import { ValueIsNullError } from "../utils/nullError";
 
-export async function eevent(interaction: ChatInputCommandInteraction) {
-  const eventsFile = "./data/events.json";
-  const eventsData = JSON.parse(fs.readFileSync(eventsFile, "utf8"));
-
-  const eventId = interaction.options.getString("id", true);
-  const newTitle = interaction.options.getString("title", true);
-
-  const event = eventsData.events.find((e: any) => e.id === eventId);
-  if (!event) {
-    await interaction.reply({ content: `❌ Event not found`, ephemeral: true });
-    return;
+export async function execute(interaction:ChatInputCommandInteraction) {
+  const guildId = interaction.guildId;
+  const eventName = interaction.options.getString("name", true);
+  const newDate = interaction.options.getString("date");
+  if(guildId == null){
+    throw new ValueIsNullError()
   }
 
-  event.title = newTitle;
-  fs.writeFileSync(eventsFile, JSON.stringify(eventsData, null, 2));
+  const guildData = getGuildData(guildId);
+  if (!guildData.events![eventName]) {
+    return interaction.reply(`Event '${eventName}' not found.`);
+  }
+  
 
-  await interaction.reply({ content: `✏️ Renamed event to **${newTitle}**`, ephemeral: true });
+  guildData.events![eventName].date = newDate;
+  setGuildData(guildId, guildData);
+
+  await interaction.reply(`✏️ Event '${eventName}' updated for this guild.`);
 }
