@@ -56,10 +56,12 @@ class Roster(commands.Cog):
             return
         roster["members"][position] = str(member.id)
         data["rosters"][roster_id] = roster
-        if roster["roleId"] is not None and isinstance(roster["roleId"], int):
+        if roster["roleId"] is not None:
             role=guild.get_role(int(roster["roleId"]))
             if role is not None:
                 await member.add_roles(role, reason=f"{member.nick} got added to the roster {roster_id}!")
+            else:
+                await interaction.response.send_message("Could not find role", ephemeral=True)
         set_guild_data(GUILD_ID, data)
         await interaction.response.send_message(
             f"✅ Added {member.mention} to roster {roster['name']} at {position}.",
@@ -83,7 +85,7 @@ class Roster(commands.Cog):
         removed_id: int = int(roster["members"].pop(position))
         data["rosters"][roster_id] = roster
         member = guild.get_member(removed_id)
-        if (roster["roleId"] is not None and isinstance(roster["roleId"], int)) and member is not None:
+        if roster["roleId"] is not None and member is not None:
             role=guild.get_role(int(roster["roleId"]))
             if role is not None:
                 await member.remove_roles(role, reason=f"{member.nick} got removed from the roster {roster_id}!")
