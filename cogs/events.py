@@ -2,13 +2,12 @@
 
 import datetime
 from typing import Any, Dict, Optional
+import pytz
 import discord
 from discord.ext import commands
 from discord import app_commands
 from utils.storage import get_guild_data, set_guild_data
 from utils.validator import validate_interaction_guild
-from utils.timecalender import CalendarView
-from bot import log
 
 class Events(commands.Cog):
     """The event base class"""
@@ -17,37 +16,41 @@ class Events(commands.Cog):
         self.bot: commands.Bot = bot
 
     @app_commands.command(name="cevent", description="Create an event")
+    @app_commands.commands.describe(time="Time in 24h format in this format: YYYY/MM/DD-HH:MM")
     async def cevent(
         self,
         interaction: discord.Interaction,
         event_id: str,
         title: str,
+        time: str,
+        tz_name: Optional[str],
         roster_id: Optional[str] = None,
     ) -> None:
         """Create Event"""
         guild = validate_interaction_guild(interaction)
         GUILD_ID = guild.id
-        data: Dict[str, Any] = get_guild_data(GUILD_ID)
-
-        def finalize(unix_ts: int) -> None:
-            data["events"][event_id] = {
-                "id": event_id,
-                "title": title,
-                "dateUnix": unix_ts,
-                "rosterId": roster_id,
-                "createdBy": str(interaction.user.id),
-                "pinged": False,
-                "linkedDiscordEventId": None,
-            }
-            set_guild_data(GUILD_ID, data)
-            log.info("Event saved!")
-
-        now: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
-        view: CalendarView = CalendarView(now.year, now.month, finalize)
-
-        embed = discord.Embed(title="📅 Pick a Date", description="Use the buttons below to select.", color=discord.Color.blue())
-        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
-
+        # Parse the string into a datetime
+        try:
+            dt_naive = datetime.datetime.strptime(time, "%Y/%m/%d-%H:%M")
+            tz = pytz.timezone(tz_name if tz_name is not None else "UTC")
+            dt_local = tz.localize(dt_naive)
+            dt_utc = dt_local.astimezone(datetime.timezone.utc)
+            unix_ts = int(dt_utc.timestamp())
+            data: Dict[str, Any] = get_guild_data(GUILD_ID)
+            data = get_guild_data(guild.id)
+        except Exception as e:
+            raise Exception from e
+        data["events"][event_id] = {
+            "id": event_id,
+            "title": title,
+            "dateUnix": unix_ts,
+            "rosterId": roster_id,
+            "createdBy": str(interaction.user.id),
+            "pinged": False,
+            "linkedDiscordEventId": None,
+        }
+        set_guild_data(guild.id, data)
+        await interaction.response.send_message("Successfully completed operation /cevent ✅", ephemeral=True)
 
     @app_commands.command(name="devent", description="Delete an event")
     async def devent(self, interaction: discord.Interaction, event_id: str) -> None:

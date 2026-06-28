@@ -4,6 +4,7 @@ from typing import Optional, Any, Dict
 import discord
 from discord.ext import commands
 from discord import app_commands
+from discord.app_commands import Choice
 from utils.storage import get_guild_data, set_guild_data
 from utils.validator import validate_interaction_guild
 
@@ -15,6 +16,12 @@ class Config(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="config", description="View or update bot config")
+    @app_commands.commands.choices(
+        key=[
+            Choice(name="pingMinutesBefore", value="pingMinutesBefore"),
+            Choice(name="eventChannelId", value="eventChannelId")
+        ]
+    )
     async def config(
         self,
         interaction: discord.Interaction,
