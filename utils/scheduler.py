@@ -1,11 +1,15 @@
+"""Scheduling"""
+
 import time
 from typing import Any, Dict
 from discord.ext import tasks, commands
 from utils.storage import load_all, save_all
 
+
 def start_scheduler(bot: commands.Bot) -> None:
-    """"""
-    @tasks.loop(seconds=60)
+    """Starts the scheduler"""
+
+    @tasks.loop(seconds=30.0)
     async def check_events() -> None:
         now: int = int(time.time())
         all_data: Dict[str, Dict[str, Any]] = load_all()
@@ -25,9 +29,16 @@ def start_scheduler(bot: commands.Bot) -> None:
                     channel = guild.get_channel(int(channel_id))
                     if channel is None:
                         continue
-                    roster: Dict[str, Any] | None = guild_data["rosters"].get(ev.get("rosterId"))
-                    role_mention: str = f"<@&{roster['roleId']}>" if roster and roster.get("roleId") else ""
-                    await channel.send(f"🔔 Reminder: Event **{ev['title']}** starts soon! {role_mention}") # type: ignore
+                    roster: Dict[str, Any] | None = guild_data["rosters"].get(
+                        ev.get("rosterId")
+                    )
+                    role_mention: str = (
+                        f"<@&{roster['roleId']}>"
+                        if roster and roster.get("roleId")
+                        else ""
+                    )
+                    await channel.send(f"🔔 Reminder: Event **{ev['title']}** starts soon! {role_mention}")  # type: ignore
                     ev["pinged"] = True
         save_all(all_data)
+
     check_events.start()
