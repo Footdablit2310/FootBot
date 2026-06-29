@@ -1,5 +1,6 @@
 """Main Bot file"""
 
+from sys import exit as sysexit
 import subprocess
 import json
 import argparse
@@ -9,7 +10,6 @@ import discord
 from discord.ext import commands
 from color_logger.color_logger import create_logger, DEBUG, INFO, ColorFormatter
 from utils.scheduler import start_scheduler
-from sys import exit as sysexit
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
