@@ -6,6 +6,7 @@ import pytz
 from discord.ext import tasks, commands
 from utils.storage import load_all, save_all, set_guild_data
 
+
 def start_scheduler(bot: commands.Bot) -> None:
     """Starts the scheduler"""
 
@@ -18,14 +19,13 @@ def start_scheduler(bot: commands.Bot) -> None:
             threshold: int = ping_minutes * 60
             for ev in guild_data["events"].copy().values():
                 if ev["dateUnix"] <= now:
-                    event_id=ev["id"]
+                    event_id = ev["id"]
                     if event_id in guild_data["events"]:
                         del guild_data["events"][event_id]
                         set_guild_data(int(guild_id), guild_data)
                         print("✅🗑️ Old event deleted.")
                     else:
                         print("❌🗑️ Old event not found.")
-                    pass
                 if ev.get("pinged"):
                     continue
                 if 0 <= (ev["dateUnix"] - now) <= threshold:

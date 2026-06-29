@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from utils.storage import get_guild_data, set_guild_data
-from utils.validator import validate_interaction_guild
+from utils.validator import validate_interaction_guild, validate_permissions
 
 
 class Roster(commands.Cog):
@@ -16,9 +16,18 @@ class Roster(commands.Cog):
 
     @app_commands.command(name="croster", description="Create a roster")
     async def croster(
-        self, interaction: discord.Interaction, roster_id: str, name: str, assign_role:discord.Role
+        self,
+        interaction: discord.Interaction,
+        roster_id: str,
+        name: str,
+        assign_role: discord.Role,
     ) -> None:
         """Handles the /croster command"""
+        if not validate_permissions(interaction):
+            await interaction.response.send_message(
+                "You do not have access to this command!", ephemeral=True
+            )
+            return
         guild = validate_interaction_guild(interaction)
         GUILD_ID = guild.id
         data: Dict[str, Any] = get_guild_data(GUILD_ID)
@@ -29,7 +38,7 @@ class Roster(commands.Cog):
             "name": name,
             "members": {},
             "createdBy": str(interaction.user),
-            "roleId":str(assign_role.id)
+            "roleId": str(assign_role.id),
         }
         set_guild_data(GUILD_ID, data)
         await interaction.response.send_message(
@@ -45,6 +54,11 @@ class Roster(commands.Cog):
         position: str,
     ) -> None:
         """Handles the /aroster command"""
+        if not validate_permissions(interaction):
+            await interaction.response.send_message(
+                "You do not have access to this command!", ephemeral=True
+            )
+            return
         guild = validate_interaction_guild(interaction)
         GUILD_ID = guild.id
         data: Dict[str, Any] = get_guild_data(GUILD_ID)
@@ -57,11 +71,15 @@ class Roster(commands.Cog):
         roster["members"][position] = str(member.id)
         data["rosters"][roster_id] = roster
         if roster["roleId"] is not None:
-            role=guild.get_role(int(roster["roleId"]))
+            role = guild.get_role(int(roster["roleId"]))
             if role is not None:
-                await member.add_roles(role, reason=f"{member.nick} got added to the roster {roster_id}!")
+                await member.add_roles(
+                    role, reason=f"{member.nick} got added to the roster {roster_id}!"
+                )
             else:
-                await interaction.response.send_message("Could not find role", ephemeral=True)
+                await interaction.response.send_message(
+                    "Could not find role", ephemeral=True
+                )
         set_guild_data(GUILD_ID, data)
         await interaction.response.send_message(
             f"✅ Added {member.mention} to roster {roster['name']} at {position}.",
@@ -73,6 +91,11 @@ class Roster(commands.Cog):
         self, interaction: discord.Interaction, roster_id: str, position: str
     ) -> None:
         """Handles the /rroster command"""
+        if not validate_permissions(interaction):
+            await interaction.response.send_message(
+                "You do not have access to this command!", ephemeral=True
+            )
+            return
         guild = validate_interaction_guild(interaction)
         GUILD_ID = guild.id
         data: Dict[str, Any] = get_guild_data(GUILD_ID)
@@ -86,9 +109,12 @@ class Roster(commands.Cog):
         data["rosters"][roster_id] = roster
         member = guild.get_member(removed_id)
         if roster["roleId"] is not None and member is not None:
-            role=guild.get_role(int(roster["roleId"]))
+            role = guild.get_role(int(roster["roleId"]))
             if role is not None:
-                await member.remove_roles(role, reason=f"{member.nick} got removed from the roster {roster_id}!")
+                await member.remove_roles(
+                    role,
+                    reason=f"{member.nick} got removed from the roster {roster_id}!",
+                )
         set_guild_data(GUILD_ID, data)
         await interaction.response.send_message(
             f"🗑️ Removed <@{removed_id}> from roster {roster['name']} at {position}.",
@@ -98,6 +124,11 @@ class Roster(commands.Cog):
     @app_commands.command(name="droster", description="Deletes the roster")
     async def droster(self, interaction: discord.Interaction, roster_id: str):
         """Handles the /droster command"""
+        if not validate_permissions(interaction):
+            await interaction.response.send_message(
+                "You do not have access to this command!", ephemeral=True
+            )
+            return
         guild = validate_interaction_guild(interaction)
         GUILD_ID = guild.id
         data: Dict[str, Any] = get_guild_data(GUILD_ID)

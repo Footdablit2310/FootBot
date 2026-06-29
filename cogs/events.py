@@ -7,7 +7,8 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from utils.storage import get_guild_data, set_guild_data
-from utils.validator import validate_interaction_guild
+from utils.validator import validate_interaction_guild, validate_permissions
+
 
 class Events(commands.Cog):
     """The event base class"""
@@ -16,7 +17,9 @@ class Events(commands.Cog):
         self.bot: commands.Bot = bot
 
     @app_commands.command(name="cevent", description="Create an event")
-    @app_commands.commands.describe(time="Time in 24h format in this format: YYYY/MM/DD-HH:MM")
+    @app_commands.commands.describe(
+        time="Time in 24h format in this format: YYYY/MM/DD-HH:MM"
+    )
     async def cevent(
         self,
         interaction: discord.Interaction,
@@ -27,6 +30,11 @@ class Events(commands.Cog):
         roster_id: Optional[str] = None,
     ) -> None:
         """Create Event"""
+        if not validate_permissions(interaction):
+            await interaction.response.send_message(
+                "You do not have access to this command!", ephemeral=True
+            )
+            return
         guild = validate_interaction_guild(interaction)
         GUILD_ID = guild.id
         # Parse the string into a datetime
@@ -50,11 +58,18 @@ class Events(commands.Cog):
             "linkedDiscordEventId": None,
         }
         set_guild_data(guild.id, data)
-        await interaction.response.send_message("Successfully completed operation /cevent ✅", ephemeral=True)
+        await interaction.response.send_message(
+            "Successfully completed operation /cevent ✅", ephemeral=True
+        )
 
     @app_commands.command(name="devent", description="Delete an event")
     async def devent(self, interaction: discord.Interaction, event_id: str) -> None:
         """Handles the /devent command"""
+        if not validate_permissions(interaction):
+            await interaction.response.send_message(
+                "You do not have access to this command!", ephemeral=True
+            )
+            return
         guild = validate_interaction_guild(interaction)
         GUILD_ID = guild.id
         data: Dict[str, Any] = get_guild_data(GUILD_ID)
@@ -78,6 +93,11 @@ class Events(commands.Cog):
         new_unix_time: Optional[int] = None,
     ) -> None:
         """Handles the /eevent command"""
+        if not validate_permissions(interaction):
+            await interaction.response.send_message(
+                "You do not have access to this command!", ephemeral=True
+            )
+            return
         guild = validate_interaction_guild(interaction)
         GUILD_ID = guild.id
         data: Dict[str, Any] = get_guild_data(GUILD_ID)
@@ -104,6 +124,11 @@ class Events(commands.Cog):
         self, interaction: discord.Interaction, event_id: str, discord_event_id: int
     ) -> None:
         """Link a FootBot event to a Discord Scheduled Event by ID."""
+        if not validate_permissions(interaction):
+            await interaction.response.send_message(
+                "You do not have access to this command!", ephemeral=True
+            )
+            return
         guild = validate_interaction_guild(interaction)
         GUILD_ID = guild.id
         data: Dict[str, Any] = get_guild_data(GUILD_ID)
