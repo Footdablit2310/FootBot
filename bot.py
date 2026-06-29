@@ -9,6 +9,7 @@ import discord
 from discord.ext import commands
 from color_logger.color_logger import create_logger, DEBUG, INFO, ColorFormatter
 from utils.scheduler import start_scheduler
+from sys import exit as sysexit
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -65,7 +66,8 @@ async def on_ready() -> None:
             shell=True,
             start_new_session=True,
         )
-        raise KeyboardInterrupt("Command cleanup has been completed")
+        time.sleep(2)
+        sysexit(0)
     await bot.tree.sync()
     log.info("✅ Logged in as %s", bot.user)
     start_scheduler(bot)

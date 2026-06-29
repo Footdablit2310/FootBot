@@ -27,7 +27,13 @@ def get_guild_data(guild_id: int) -> Dict[str, Any]:
     gid: str = str(guild_id)
     if gid not in all_data:
         all_data[gid] = {
-            "config": {"pingMinutesBefore": 15},
+            "config": {
+                "pingMinutesBefore": 15,
+                "permissions": {
+                    "roles":[],
+                    "members":[]
+                }
+            },
             "rosters": {},
             "events": {},
         }
