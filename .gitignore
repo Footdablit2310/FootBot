@@ -3,3 +3,6 @@
 *.json
 **/__pycache__/**/*.pyc
 **/*.cpython-314.pyc
+# Ignore CPython 3.14 compiled bytecode
+__pycache__/
+*.cpython-314.pyc

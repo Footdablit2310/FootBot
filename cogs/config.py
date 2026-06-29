@@ -21,7 +21,8 @@ class Config(commands.Cog):
     async def permissions(
         self,
         interaction: discord.Interaction,
-        values: Optional[list[discord.Role | discord.Member]],
+        roles: Optional[list[discord.Role]] = None,
+        members: Optional[list[discord.Member]] = None,
     ):
         """
         Handles ALL Permissions for a Guild
@@ -31,31 +32,39 @@ class Config(commands.Cog):
                 "You do not have access to this command!", ephemeral=True
             )
             return
+
         guild = validate_interaction_guild(interaction)
         GUILD_ID = guild.id
-        data: Dict[str, Dict[str, Any]] = get_guild_data(GUILD_ID)
-        permissions_config: dict[str, list[int]] = data["config"]["permissions"]
-        str_lst: list[str] = []
+        data: dict[str, Any] = get_guild_data(GUILD_ID)["config"]["permissions"]
+        permissions_config: dict[str, list[int]] = data
+
+        # Reset permissions
         permissions_config["roles"] = []
         permissions_config["members"] = []
-        if values is not None:
-            for value in values:
-                if isinstance(value, discord.Role):
-                    permissions_config["roles"].append(value.id)
-                    set_guild_data(GUILD_ID, data)
-                else:
-                    permissions_config["members"].append(value.id)
-                    set_guild_data(GUILD_ID, data)
-            for k, v in permissions_config.items():
-                str_lst.append(f"{k} : {v}")
+
+        # Update roles
+        if roles is not None:
+            for role in roles:
+                permissions_config["roles"].append(role.id)
+
+        # Update members
+        if members is not None:
+            for member in members:
+                permissions_config["members"].append(member.id)
+
+        # Save changes
+        set_guild_data(GUILD_ID, data)
+
+        # Build response string
+        str_lst = [f"{k}: {v}" for k, v in permissions_config.items()]
+
+        if roles or members:
             await interaction.response.send_message(
-                f"⚙️ New permissions: {"\n".join(str_lst)}", ephemeral=True
+                "⚙️ New permissions:\n" + "\n".join(str_lst), ephemeral=True
             )
         else:
-            for k, v in permissions_config.items():
-                str_lst.append(f"{k} : {v}")
             await interaction.response.send_message(
-                f"⚙️ Current permissions: {"\n".join(str_lst)}", ephemeral=True
+                "⚙️ Current permissions:\n" + "\n".join(str_lst), ephemeral=True
             )
 
     @app_commands.command(name="config", description="View or update bot config")
