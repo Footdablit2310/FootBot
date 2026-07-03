@@ -174,3 +174,7 @@ class ApprovalView(discord.ui.View):
             return
 
         await interaction.response.send_message("❌ Submission denied.", ephemeral=True)
+
+async def setup(bot: commands.Bot) -> None:
+    """Prepares the Bot by adding the Map Cog."""
+    await bot.add_cog(Submit(bot))
