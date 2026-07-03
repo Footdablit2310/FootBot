@@ -60,29 +60,47 @@ class Map(commands.Cog):
         await interaction.response.send_message(f"Map **{name}** created and stored.", ephemeral=True)
 
     @app_commands.command(name="view-map", description="View details of a stored map")
-    @app_commands.describe(
-        name="Name of the map to view"
-    )
-    async def view_map(
-        self,
-        interaction: discord.Interaction,
-        name: str
-    ) -> None:
+    async def view_map(self, interaction: discord.Interaction) -> None:
         """
         Handles the /view-map command.
-        Looks up a map by name in guild storage and displays its details.
+        Shows a select menu of all maps stored for the guild.
         """
         guild: discord.Guild = validate_interaction_guild(interaction)
         guild_data: Dict[str, Any] = get_guild_data_l(guild.id)
         maps_data: List[Dict[str, Any]] = guild_data.get("maps", [])
 
-        chosen_map: Dict[str, Any] | None = next((m for m in maps_data if m["name"].lower() == name.lower()), None)
-        if not chosen_map:
-            await interaction.response.send_message(f"No map named **{name}** found.", ephemeral=True)
+        if not maps_data:
+            await interaction.response.send_message("No maps available.", ephemeral=True)
             return
 
-        credit_member: discord.Member | None = guild.get_member(chosen_map["credit"])
-        role_required: discord.Role | None = guild.get_role(chosen_map["role_required"])
+        options: List[discord.SelectOption] = [
+            discord.SelectOption(label=m["name"], description=f"{m['difficulty']} ({m['points']} pts)")
+            for m in maps_data
+        ]
+
+        view: MapSelectView = MapSelectView(maps_data, guild)
+        view.add_item(discord.ui.Select(placeholder="Choose a map", options=options, custom_id="map_select"))
+
+        await interaction.response.send_message("Select a map to view:", view=view, ephemeral=True)
+
+
+class MapSelectView(discord.ui.View):
+    """Interactive view for selecting and displaying a map."""
+
+    def __init__(self, maps_data: List[Dict[str, Any]], guild: discord.Guild) -> None:
+        """Initialize the map selection view."""
+        super().__init__(timeout=60)
+        self.maps_data: List[Dict[str, Any]] = maps_data
+        self.guild: discord.Guild = guild
+
+    @discord.ui.select(custom_id="map_select")
+    async def map_select(self, interaction: discord.Interaction, select: discord.ui.Select[Any]) -> None:
+        """Handle map selection and display its details."""
+        mapname: str = select.values[0]
+        chosen_map: Dict[str, Any] = next(m for m in self.maps_data if m["name"] == mapname)
+
+        credit_member: discord.Member | None = self.guild.get_member(chosen_map["credit"])
+        role_required: discord.Role | None = self.guild.get_role(chosen_map["role_required"])
 
         embed: discord.Embed = discord.Embed(
             title=chosen_map["name"],
@@ -95,7 +113,8 @@ class Map(commands.Cog):
         embed.add_field(name="Map File", value=f"[{chosen_map['map_file']['filename']}]({chosen_map['map_file']['url']})", inline=False)
         embed.add_field(name="Route", value=chosen_map["route"], inline=False)
 
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.edit_message(content=None, embed=embed, view=None)
+
 
 async def setup(bot: commands.Bot) -> None:
     """Prepares the Bot by adding the Map Cog."""
