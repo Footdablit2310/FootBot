@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Discord Roster & Event Bot</title>
 </head>
 <body>
   <h1>Discord Roster & Event Bot</h1>
