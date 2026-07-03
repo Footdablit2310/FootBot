@@ -51,7 +51,9 @@ async def setup() -> None:
     await bot.load_extension("cogs.roster")
     await bot.load_extension("cogs.events")
     await bot.load_extension("cogs.view")
-
+    await bot.load_extension("cogs.leaderboard")
+    await bot.load_extension("cogs.map")
+    await bot.load_extension("cogs.submit")
 
 @bot.event
 async def on_ready() -> None:
