@@ -3,8 +3,8 @@ from typing import Any, Dict
 import discord
 from discord.ext import commands
 from discord import app_commands
-from utils.storage import get_guild_data
-from utils.validator import validate_interaction_guild, validate_permissions
+from utils.storage import get_guild_data_r
+from utils.validator import validate_interaction_guild, validate_permissions_r
 
 
 class PagedEmbed(discord.ui.View):
@@ -60,7 +60,7 @@ class RosterSelect(discord.ui.Select[Any]):
         self.guild = guild
 
     async def callback(self, interaction: discord.Interaction):
-        ephemeral = not validate_permissions(interaction)
+        ephemeral = not validate_permissions_r(interaction)
         roster_id = self.values[0]
         if roster_id == "__all__":
             if not self.rosters:
@@ -133,7 +133,7 @@ class EventSelect(discord.ui.Select[Any]):
         self.events = events
 
     async def callback(self, interaction: discord.Interaction):
-        ephemeral = not validate_permissions(interaction)
+        ephemeral = not validate_permissions_r(interaction)
         event_id = self.values[0]
         if event_id == "__all__":
             if not self.events:
@@ -196,9 +196,9 @@ class View(commands.Cog):
     @app_commands.command(name="view-roster", description="View roster details")
     async def view_roster(self, interaction: discord.Interaction):
         """The actual command"""
-        ephemeral = not validate_permissions(interaction)
+        ephemeral = not validate_permissions_r(interaction)
         guild = validate_interaction_guild(interaction)
-        data = get_guild_data(guild.id)
+        data = get_guild_data_r(guild.id)
         rosters = data["rosters"]
         view = discord.ui.View()
         view.add_item(RosterSelect(rosters, guild))
@@ -209,9 +209,9 @@ class View(commands.Cog):
     @app_commands.command(name="view-event", description="View event details")
     async def view_event(self, interaction: discord.Interaction):
         """The actual command"""
-        ephemeral = not validate_permissions(interaction)
+        ephemeral = not validate_permissions_r(interaction)
         guild = validate_interaction_guild(interaction)
-        data = get_guild_data(guild.id)
+        data = get_guild_data_r(guild.id)
         events = data["events"]
         view = discord.ui.View()
         view.add_item(EventSelect(events))

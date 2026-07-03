@@ -4,7 +4,7 @@ import datetime
 from typing import Any, Dict
 import pytz
 from discord.ext import tasks, commands
-from utils.storage import load_all, save_all, set_guild_data
+from utils.storage import load_all_r, save_all_r, set_guild_data_r
 
 
 def start_scheduler(bot: commands.Bot) -> None:
@@ -13,7 +13,7 @@ def start_scheduler(bot: commands.Bot) -> None:
     @tasks.loop(seconds=30.0, name="Check events")
     async def check_events() -> None:
         now: int = int(datetime.datetime.now(pytz.utc).timestamp())
-        all_data: Dict[str, Dict[str, dict[str, Any]]] = load_all()
+        all_data: Dict[str, Dict[str, dict[str, Any]]] = load_all_r()
         for guild_id, guild_data in all_data.items():
             ping_minutes: int = int(guild_data["config"].get("pingMinutesBefore", 15))
             threshold: int = ping_minutes * 60
@@ -22,7 +22,7 @@ def start_scheduler(bot: commands.Bot) -> None:
                     event_id = ev["id"]
                     if event_id in guild_data["events"]:
                         del guild_data["events"][event_id]
-                        set_guild_data(int(guild_id), guild_data)
+                        set_guild_data_r(int(guild_id), guild_data)
                         print("✅🗑️ Old event deleted.")
                     else:
                         print("❌🗑️ Old event not found.")
@@ -50,6 +50,6 @@ def start_scheduler(bot: commands.Bot) -> None:
                     )
                     await channel.send(f"🔔 Reminder: Event **{ev['title']}** starts soon! {role_mention}")  # type: ignore
                     ev["pinged"] = True
-        save_all(all_data)
+        save_all_r(all_data)
 
     check_events.start()
