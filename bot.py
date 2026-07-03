@@ -1,7 +1,6 @@
 """Main Bot file"""
 
 from sys import exit as sysexit
-import subprocess
 import json
 import argparse
 import time
@@ -54,21 +53,19 @@ async def setup() -> None:
     await bot.load_extension("cogs.leaderboard")
     await bot.load_extension("cogs.map")
     await bot.load_extension("cogs.submit")
+    await bot.load_extension("cogs.hierarchy")
 
 @bot.event
 async def on_ready() -> None:
     """Starts scheduler"""
     if args.update_bot:
+        bot.status = discord.Status.offline
         bot.tree.clear_commands(guild=None, type=None)
         for guild in bot.guilds:
             bot.tree.clear_commands(guild=guild, type=None)
             log.debug("Guild %s has been cleared.", guild)
-        subprocess.Popen(
-            "python C:/Users/kolay/FootBot/bot.py" + " --debug" if args.debug else "",
-            shell=True,
-            start_new_session=True,
-        )
-        time.sleep(2)
+        time.sleep(3)
+        bot.status = discord.Status.offline
         sysexit(0)
     await bot.tree.sync()
     log.info("✅ Logged in as %s", bot.user)
@@ -82,6 +79,7 @@ if __name__ == "__main__":
     try:
         time.sleep(5)
         asyncio.run(setup())
+        bot.status = discord.Status.online
         bot.run(
             TOKEN,
             log_handler=log.handlers[0],
@@ -92,4 +90,5 @@ if __name__ == "__main__":
         )
     except KeyboardInterrupt:
         loop = asyncio.get_event_loop()
+        bot.status = discord.Status.invisible
         loop.run_until_complete(bot.close())

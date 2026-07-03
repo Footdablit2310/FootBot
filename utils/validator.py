@@ -1,5 +1,6 @@
 """The file with Validator Utils"""
 
+from typing import Any
 from discord import Interaction, Guild, Role, User, Member
 from utils.storage import get_guild_data_r, get_guild_data_l
 
@@ -92,3 +93,34 @@ def validate_permissions_l(interaction: Interaction) -> bool:
 
     # If none matched, deny
     return False
+
+def can_access_role(interaction:Interaction, required_role: Role) -> bool:
+    """
+    Returns True if the member can access maps requiring `required_role`,
+    based on the custom hierarchy list (highest first).
+    """
+    # Find member's highest rank index
+    guild=validate_interaction_guild(interaction)
+    guild_data = get_guild_data_l(guild.id)
+    hierarchy:list[Any] = guild_data["hierarchy"]
+    member = interaction.user
+    if isinstance(member, User):
+        raise ValueError("Cannot be run outside Guild")
+    member_index = None
+    for i, rid in enumerate(hierarchy):
+        role = member.guild.get_role(int(rid))
+        if role and role in member.roles:
+            member_index = i
+            break
+
+    # Find required role's index
+    try:
+        required_index = hierarchy.index(required_role.id)
+    except ValueError:
+        return False  # role not in hierarchy
+
+    if member_index is None:
+        return False  # member has no rank in hierarchy
+
+    # Rule: can only access roles at or below your rank
+    return member_index <= required_index

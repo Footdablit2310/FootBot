@@ -29,10 +29,7 @@ def get_guild_data_r(guild_id: int) -> Dict[str, Any]:
         all_data[gid] = {
             "config": {
                 "pingMinutesBefore": 15,
-                "permissions": {
-                    "roles":[],
-                    "members":[]
-                }
+                "permissions": {"roles": [], "members": []},
             },
             "rosters": {},
             "events": {},
@@ -46,6 +43,7 @@ def set_guild_data_r(guild_id: int, new_data: Dict[str, Any]) -> None:
     all_data: Dict[str, Dict[str, Any]] = load_all_r()
     all_data[str(guild_id)] = new_data
     save_all_r(all_data)
+
 
 LEADERBOARD_DATA_FILE: str = "leaderboard_data.json"
 
@@ -70,14 +68,10 @@ def get_guild_data_l(guild_id: int) -> Dict[str, Any]:
     gid: str = str(guild_id)
     if gid not in all_data:
         all_data[gid] = {
-            "config": {
-                "permissions": {
-                    "roles":[],
-                    "members":[]
-                }
-            },
+            "config": {"permissions": {"roles": [], "members": []}},
             "maps": [],
             "leaderboard": [],
+            "hierarchy": [],
         }
         save_all_l(all_data)
     return all_data[gid]
