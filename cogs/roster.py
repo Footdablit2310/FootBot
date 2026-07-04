@@ -139,7 +139,7 @@ class Roster(commands.Cog):
             )
             set_guild_data_r(GUILD_ID, data)
             return
-        except KeyError, ValueError:
+        except(KeyError, ValueError):
             await interaction.response.send_message(
                 f"Roster {roster_id} does not exist!", ephemeral=True
             )
