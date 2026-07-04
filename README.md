@@ -63,7 +63,7 @@
       <tr><td>/cevent</td><td>Create an event (title, time, roster link)</td></tr>
       <tr><td>/view-event</td><td>Dropdown to view event details (with pagination)</td></tr>
       <tr><td>/apermissions_roster</td><td>Add role/member permissions</td></tr>
-      <tr><td>/rpermissions_rosterr</td><td>Remove role/member permissions</td></tr>
+      <tr><td>/rpermissions_roster</td><td>Remove role/member permissions</td></tr>
     </tbody>
   </table>
 
