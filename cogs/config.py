@@ -10,6 +10,7 @@ from utils.storage import (
     set_guild_data_r,
     get_guild_data_l,
     set_guild_data_l,
+    command_list_add,
 )
 from utils.validator import validate_interaction_guild, validate_permissions_r
 
@@ -285,4 +286,10 @@ class Config(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     """Prepares Bot"""
+    command_list_add(Config.config_roster.name)
+    command_list_add(Config.add_permissions_roster.name)
+    command_list_add(Config.add_permissions_leaderboard.name)
+    command_list_add(Config.remove_permissions_leaderboard.name)
+    command_list_add(Config.remove_permissions_roster.name)
+
     await bot.add_cog(Config(bot))

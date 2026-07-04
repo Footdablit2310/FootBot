@@ -5,7 +5,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from utils.validator import validate_interaction_guild, validate_permissions_l
-from utils.storage import get_guild_data_l, set_guild_data_l
+from utils.storage import get_guild_data_l, set_guild_data_l, command_list_add
 
 
 class Hierarchy(commands.Cog):
@@ -21,7 +21,7 @@ class Hierarchy(commands.Cog):
         role="Role to add", position="Position in hierarchy (1 = top)"
     )
     async def add_rank_to_hierarchy(
-        self, interaction: discord.Interaction, role: discord.Role, position: int
+        self, interaction: discord.Interaction, role: discord.Role, position: int, points_required: int
     ) -> None:
         """Adds a rank to hierarchy"""
         if not validate_permissions_l(interaction):
@@ -92,4 +92,7 @@ class Hierarchy(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     """Prepares the Bot by adding the Hierarchy Cog."""
+    command_list_add(Hierarchy.add_rank_to_hierarchy.name)
+    command_list_add(Hierarchy.view_hierarchy.name)
+    command_list_add(Hierarchy.reset_hierarchy.name)
     await bot.add_cog(Hierarchy(bot))

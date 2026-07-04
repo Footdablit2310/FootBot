@@ -3,7 +3,7 @@ from typing import Dict, Any, List
 import discord
 from discord import app_commands
 from discord.ext import commands
-from utils.storage import get_guild_data_l, set_guild_data_l
+from utils.storage import get_guild_data_l, set_guild_data_l, command_list_add
 from utils.validator import validate_permissions_l, validate_interaction_guild, can_access_role
 
 #pylint: disable=W0718
@@ -260,6 +260,7 @@ class ApprovalView(discord.ui.View):
 
 async def setup(bot: commands.Bot) -> None:
     """Prepares the Bot by adding the Submit Cog."""
+    command_list_add(Submit.submit.name)
     await bot.add_cog(Submit(bot))
 
 #pylint: enable=W0718

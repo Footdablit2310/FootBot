@@ -3,7 +3,7 @@ from typing import Any, Dict
 import discord
 from discord.ext import commands
 from discord import app_commands
-from utils.storage import get_guild_data_r
+from utils.storage import get_guild_data_r, command_list_add
 from utils.validator import validate_interaction_guild, validate_permissions_r
 
 
@@ -222,4 +222,6 @@ class View(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     """This handles setup"""
+    command_list_add(View.view_event.name)
+    command_list_add(View.view_roster.name)
     await bot.add_cog(View(bot))

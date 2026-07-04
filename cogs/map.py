@@ -9,7 +9,7 @@ from utils.validator import (
     validate_permissions_l,
     can_access_role,
 )
-from utils.storage import get_guild_data_l, set_guild_data_l
+from utils.storage import get_guild_data_l, set_guild_data_l, command_list_add
 
 
 class Map(commands.Cog):
@@ -214,4 +214,7 @@ class MapSelectView(discord.ui.View):
 
 async def setup(bot: commands.Bot) -> None:
     """Prepares the Bot by adding the Map Cog."""
+    command_list_add(Map.create_map.name)
+    command_list_add(Map.view_map.name)
+    command_list_add(Map.delete_map.name)
     await bot.add_cog(Map(bot))

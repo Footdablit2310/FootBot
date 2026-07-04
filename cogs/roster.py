@@ -4,7 +4,7 @@ from typing import Any, Dict
 import discord
 from discord.ext import commands
 from discord import app_commands
-from utils.storage import get_guild_data_r, set_guild_data_r
+from utils.storage import get_guild_data_r, set_guild_data_r, command_list_add
 from utils.validator import validate_interaction_guild, validate_permissions_r
 
 
@@ -148,4 +148,8 @@ class Roster(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     """Prepares the bot"""
+    command_list_add(Roster.create_roster.name)
+    command_list_add(Roster.delete_roster.name)
+    command_list_add(Roster.add_to_roster.name)
+    command_list_add(Roster.remove_from_roster.name)
     await bot.add_cog(Roster(bot))

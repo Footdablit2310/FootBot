@@ -1,5 +1,6 @@
 """Handles all read and write operations"""
 
+from logging import Logger
 import json
 import os
 from typing import Any, Dict
@@ -18,7 +19,7 @@ def load_all_r() -> Dict[str, Dict[str, Any]]:
 def save_all_r(data: Dict[str, Dict[str, Any]]) -> None:
     """Saves ALL the data in roster_data.json"""
     with open(ROSTER_DATA_FILE, "w", encoding="utf8") as f:
-        json.dump(data, f, indent=2)
+        json.dump(data, f, indent=4)
 
 
 def get_guild_data_r(guild_id: int) -> Dict[str, Any]:
@@ -59,7 +60,7 @@ def load_all_l() -> Dict[str, Dict[str, Any]]:
 def save_all_l(data: Dict[str, Dict[str, Any]]) -> None:
     """Saves ALL the data in leaderboard_data.json"""
     with open(LEADERBOARD_DATA_FILE, "w", encoding="utf8") as f:
-        json.dump(data, f, indent=2)
+        json.dump(data, f, indent=4)
 
 
 def get_guild_data_l(guild_id: int) -> Dict[str, Any]:
@@ -82,3 +83,32 @@ def set_guild_data_l(guild_id: int, new_data: Dict[str, Any]) -> None:
     all_data: Dict[str, Dict[str, Any]] = load_all_l()
     all_data[str(guild_id)] = new_data
     save_all_l(all_data)
+
+
+CMD_LST_FILE = "command_list.json"
+
+
+def command_list_add(string: str):
+    """CLA"""
+    json_data: dict[str, list[str]] = {"": [""]}
+    if not os.path.exists(CMD_LST_FILE):
+        json_data = {"": [""]}
+    with open(CMD_LST_FILE, "r", encoding="utf8") as f:
+        json_data = json.load(f)
+    commands = json_data["cmds"]
+    commands.append(string)
+    json_data["cmds"] = commands
+    with open(CMD_LST_FILE, "w", encoding="utf8") as f:
+        json.dump(json_data, f, indent=4)
+
+
+def print_command_list(log: Logger):
+    """PCL"""
+    json_data: dict[str, list[str]] = {"": [""]}
+    if not os.path.exists(CMD_LST_FILE):
+        json_data = {"": [""]}
+    with open(CMD_LST_FILE, "r", encoding="utf8") as f:
+        json_data = json.load(f)
+    command_names = json_data["cmds"]
+    for command_name in command_names:
+        log.debug("Command: /%s has been loaded", command_name)

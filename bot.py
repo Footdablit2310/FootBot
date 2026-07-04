@@ -9,6 +9,7 @@ import discord
 from discord.ext import commands
 from color_logger.color_logger import create_logger, DEBUG, INFO, ColorFormatter
 from utils.scheduler import start_scheduler
+from utils.storage import print_command_list
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -68,9 +69,7 @@ async def on_ready() -> None:
         bot.status = discord.Status.offline
         sysexit(0)
     await bot.tree.sync()
-    for command in bot.cogs.values():
-        log.debug("Command: %s is ready.", command.__cog_name__)
-    log.info("✅ Logged in as %s", bot.user)
+    print_command_list(log)
     start_scheduler(bot)
 
 

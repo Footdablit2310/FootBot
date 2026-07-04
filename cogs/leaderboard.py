@@ -3,7 +3,7 @@ from typing import Dict, Any, List, Tuple
 import discord
 from discord import app_commands
 from discord.ext import commands
-from utils.storage import get_guild_data_l
+from utils.storage import get_guild_data_l, command_list_add
 from utils.validator import validate_interaction_guild
 class LeaderboardView(discord.ui.View):
     """
@@ -107,4 +107,5 @@ async def setup(bot: commands.Bot) -> None:
     """
     Setup function to add the Leaderboard cog.
     """
+    command_list_add(Leaderboard.leaderboard.name)
     await bot.add_cog(Leaderboard(bot))
