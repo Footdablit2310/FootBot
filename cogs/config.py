@@ -21,9 +21,9 @@ class Config(commands.Cog):
         self.bot = bot
 
     @app_commands.command(
-        name="apermissions-roster", description="Add a role or member to permissions"
+        name="add-permissions-roster", description="Add a role or member to permissions"
     )
-    async def apermissions_roster(
+    async def add_permissions_roster(
         self,
         interaction: discord.Interaction,
         role: Optional[discord.Role] = None,
@@ -77,10 +77,10 @@ class Config(commands.Cog):
         await interaction.response.send_message(msg, ephemeral=True)
 
     @app_commands.command(
-        name="rpermissions-roster",
+        name="remove-permissions-roster",
         description="Remove a role or member from permissions",
     )
-    async def rpermissions_roster(
+    async def remove_permissions_roster(
         self,
         interaction: discord.Interaction,
         role: Optional[discord.Role] = None,
@@ -133,10 +133,10 @@ class Config(commands.Cog):
         await interaction.response.send_message(msg, ephemeral=True)
 
     @app_commands.command(
-        name="apermissions-leaderboard",
+        name="add-permissions-leaderboard",
         description="Add a role or member to permissions",
     )
-    async def apermissions_leaderboard(
+    async def add_permissions_leaderboard(
         self,
         interaction: discord.Interaction,
         role: Optional[discord.Role] = None,
@@ -190,10 +190,10 @@ class Config(commands.Cog):
         await interaction.response.send_message(msg, ephemeral=True)
 
     @app_commands.command(
-        name="rpermissions-leaderboard",
+        name="remove_permissions-leaderboard",
         description="Remove a role or member from permissions",
     )
-    async def rpermissions_leaderboard(
+    async def remove_permissions_leaderboard(
         self,
         interaction: discord.Interaction,
         role: Optional[discord.Role] = None,
@@ -245,14 +245,14 @@ class Config(commands.Cog):
 
         await interaction.response.send_message(msg, ephemeral=True)
 
-    @app_commands.command(name="config", description="View or update bot config")
+    @app_commands.command(name="config-roster", description="View or update bot config")
     @app_commands.commands.choices(
         key=[
             Choice(name="pingMinutesBefore", value="pingMinutesBefore"),
             Choice(name="eventChannelId", value="eventChannelId"),
         ]
     )
-    async def config(
+    async def config_roster(
         self,
         interaction: discord.Interaction,
         key: Optional[str] = None,

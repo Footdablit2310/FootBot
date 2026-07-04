@@ -73,35 +73,46 @@ class Map(commands.Cog):
             f"Map **{name}** created and stored.", ephemeral=True
         )
     @app_commands.command(name="delete-map", description="Delete a stored map")
-    @app_commands.describe(name="Name of the map to delete")
-    async def delete_map(self, interaction: discord.Interaction, name: str) -> None:
-        """
-        Handles the /delete-map command.
-        Deletes a map entry if the user has permission (role at or below their rank).
-        """
+    async def delete_map(self, interaction: discord.Interaction) -> None:
+        """Deletes a map"""
         if not validate_permissions_l(interaction):
-            await interaction.response.send_message("You do not have access to this command!")
+            await interaction.response.send_message("You do not have access to this command!", ephemeral=True)
             return
-        guild: discord.Guild = validate_interaction_guild(interaction)
-        guild_data: Dict[str, Any] = get_guild_data_l(guild.id)
+
+        guild = validate_interaction_guild(interaction)
+        guild_data = get_guild_data_l(guild.id)
         maps_data: List[Dict[str, Any]] = guild_data.get("maps", [])
 
-        # Find the map by name
-        chosen_map = next((m for m in maps_data if m["name"].lower() == name.lower()), None)
-        if not chosen_map:
-            await interaction.response.send_message(
-                f"No map named **{name}** found.", ephemeral=True
-            )
+        if not maps_data:
+            await interaction.response.send_message("No maps stored.", ephemeral=True)
             return
 
-        # Remove the map
-        maps_data.remove(chosen_map)
-        guild_data["maps"] = maps_data
-        set_guild_data_l(guild.id, guild_data)
+        # Build select menu
+        options = [
+            discord.SelectOption(label=m["name"], description=f"{m['difficulty']} ({m['points']} pts)")
+            for m in maps_data
+        ]
 
-        await interaction.response.send_message(
-            f"Map **{name}** has been deleted.", ephemeral=True
-        )
+        select:discord.ui.Select[Any] = discord.ui.Select(placeholder="Choose a map to delete", options=options)
+
+        async def on_select(interaction: discord.Interaction):
+            mapname = select.values[0]
+            chosen_map = next((m for m in maps_data if m["name"] == mapname), None)
+            if not chosen_map:
+                await interaction.response.send_message(f"No map named **{mapname}** found.", ephemeral=True)
+                return
+
+            maps_data.remove(chosen_map)
+            guild_data["maps"] = maps_data
+            set_guild_data_l(guild.id, guild_data)
+
+            await interaction.response.edit_message(content=f"Map **{mapname}** has been deleted.", view=None)
+
+        select.callback = on_select
+        view = discord.ui.View(timeout=60)
+        view.add_item(select)
+
+        await interaction.response.send_message("Select a map to delete:", view=view, ephemeral=True)
 
     @app_commands.command(name="view-map", description="View maps for a specific role")
     @app_commands.describe(role="Role whose maps you want to view")

@@ -15,12 +15,12 @@ class Hierarchy(commands.Cog):
         self.bot: commands.Bot = bot
 
     @app_commands.command(
-        name="add-rank", description="Add a role to the custom hierarchy"
+        name="add-rank-to-hierarchy", description="Add a role to the custom hierarchy"
     )
     @app_commands.describe(
         role="Role to add", position="Position in hierarchy (1 = top)"
     )
-    async def add_rank(
+    async def add_rank_to_hierarchy(
         self, interaction: discord.Interaction, role: discord.Role, position: int
     ) -> None:
         """Adds a rank to hierarchy"""

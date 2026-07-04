@@ -14,8 +14,8 @@ class Roster(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    @app_commands.command(name="croster", description="Create a roster")
-    async def croster(
+    @app_commands.command(name="create-roster", description="Create a roster")
+    async def create_roster(
         self,
         interaction: discord.Interaction,
         roster_id: str,
@@ -45,8 +45,8 @@ class Roster(commands.Cog):
             f"✅ Roster {name} created.", ephemeral=True
         )
 
-    @app_commands.command(name="aroster", description="Add a member to a roster")
-    async def aroster(
+    @app_commands.command(name="add-to-roster", description="Add a member to a roster")
+    async def add_to_roster(
         self,
         interaction: discord.Interaction,
         roster_id: str,
@@ -86,8 +86,8 @@ class Roster(commands.Cog):
             ephemeral=True,
         )
 
-    @app_commands.command(name="rroster", description="Remove a member from a roster")
-    async def rroster(
+    @app_commands.command(name="remove-from-roster", description="Remove a member from a roster")
+    async def remove_from_roster(
         self, interaction: discord.Interaction, roster_id: str, position: str
     ) -> None:
         """Handles the /rroster command"""
@@ -121,8 +121,8 @@ class Roster(commands.Cog):
             ephemeral=True,
         )
 
-    @app_commands.command(name="droster", description="Deletes the roster")
-    async def droster(self, interaction: discord.Interaction, roster_id: str):
+    @app_commands.command(name="delete-roster", description="Deletes the roster")
+    async def delete_roster(self, interaction: discord.Interaction, roster_id: str):
         """Handles the /droster command"""
         if not validate_permissions_r(interaction):
             await interaction.response.send_message(

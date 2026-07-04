@@ -68,6 +68,8 @@ async def on_ready() -> None:
         bot.status = discord.Status.offline
         sysexit(0)
     await bot.tree.sync()
+    for command in bot.cogs.values():
+        log.debug("Command: %s is ready.", command.__cog_name__)
     log.info("✅ Logged in as %s", bot.user)
     start_scheduler(bot)
 

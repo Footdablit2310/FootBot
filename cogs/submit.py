@@ -41,9 +41,9 @@ class Submit(commands.Cog):
 
         # Build proof value
         if attachment:
-            proof_value: str = f"[File]({attachment.url})"
+            proof_value: str = f"{attachment.url}"
         elif proof:
-            proof_value = f"[Proof]({proof})"
+            proof_value = f"{proof}"
         else:
             await interaction.response.send_message("Provide proof as text or file.", ephemeral=True)
             return
@@ -108,6 +108,7 @@ class Submit(commands.Cog):
 
 
 class RankMapSelectView(discord.ui.View):
+    """Rank select menu"""
     def __init__(self, proof_value: str, submitter: discord.Member,
                  maps_by_rank: Dict[str, List[Dict[str, Any]]], guild_id: int) -> None:
         super().__init__(timeout=60)
@@ -116,22 +117,64 @@ class RankMapSelectView(discord.ui.View):
         self.maps_by_rank = maps_by_rank
         self.guild_id = guild_id
 
-        if not maps_by_rank:  # guard against empty dict
+        if not maps_by_rank:
             return
 
         options = [discord.SelectOption(label=rank) for rank in maps_by_rank.keys()]
-        if not options:  # guard against empty options
+        if not options:
             return
 
-        self.add_item(discord.ui.Select(
+        select:discord.ui.Select[Any] = discord.ui.Select(
             placeholder="Choose Rank",
             options=options,
-            custom_id="rank_select"
-        ))
+        )
+
+        async def on_rank_select(interaction: discord.Interaction):
+            rank = select.values[0]
+            maps = self.maps_by_rank[rank]
+            if not maps:
+                await interaction.response.send_message("No maps for this rank.", ephemeral=True)
+                return
+
+            map_options = [discord.SelectOption(label=m["name"]) for m in maps]
+            view = MapSelectView(self.proof_value, self.submitter, rank, maps, self.guild_id)
+
+            map_select:discord.ui.Select[Any] = discord.ui.Select(
+                placeholder="Choose Map",
+                options=map_options,
+            )
+
+            async def on_map_select(interaction: discord.Interaction):
+                mapname = map_select.values[0]
+                chosen_map = next(m for m in maps if m["name"] == mapname)
+                embed = discord.Embed(
+                    title=f"{mapname} ({rank})",
+                    description=f"Proof: {self.proof_value}",
+                    color=discord.Color.blue()
+                )
+                embed.set_footer(text=f"Submitted by {self.submitter.display_name}")
+                channel = interaction.channel
+                if channel is None:
+                    await interaction.response.send_message("Must be run from guild")
+                    raise ValueError("Must be run from guild")
+                await channel.send( # type: ignore
+                    embed=embed,
+                    view=ApprovalView(chosen_map, self.proof_value, self.submitter, self.guild_id)
+                )
+                await interaction.response.edit_message(content="Submission posted.", view=None)
+
+            map_select.callback = on_map_select
+            view.add_item(map_select)
+            await interaction.response.edit_message(content=f"Rank chosen: {rank}. Now select a map:", view=view)
+
+        select.callback = on_rank_select
+        self.add_item(select)
+
 
 
 
 class MapSelectView(discord.ui.View):
+    """The map select"""
     def __init__(self, proof_value: str, submitter: discord.Member,
                  rank: str, maps: List[Dict[str, Any]], guild_id: int) -> None:
         super().__init__(timeout=60)
@@ -151,7 +194,6 @@ class MapSelectView(discord.ui.View):
         self.add_item(discord.ui.Select(
             placeholder="Choose Map",
             options=options,
-            custom_id="map_select"
         ))
 
 
@@ -195,10 +237,9 @@ class ApprovalView(discord.ui.View):
         if self.map_entry["name"] not in completed[user_id]:
             completed[user_id].append(self.map_entry["name"])
         guild_data["completed"] = completed
-
         # Persist changes
         set_guild_data_l(self.guild_id, guild_data)
-
+        await interaction.message.delete() # type: ignore
         await interaction.response.send_message(
             f"✅ Approved! {self.submitter.mention} gains {self.map_entry['points']} points. "
             f"Map **{self.map_entry['name']}** marked as completed.",
@@ -213,7 +254,7 @@ class ApprovalView(discord.ui.View):
         if not validate_permissions_l(interaction):
             await interaction.response.send_message("You don’t have permission to deny.", ephemeral=True)
             return
-
+        await interaction.message.delete() #type: ignore
         await interaction.response.send_message("❌ Submission denied.", ephemeral=True)
 
 

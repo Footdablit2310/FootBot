@@ -46,11 +46,12 @@ class LeaderboardView(discord.ui.View):
 
         for idx, (user_id, points) in enumerate(entries, start=start+1):
             member: discord.Member | None = self.guild.get_member(int(user_id))
-            mention: str = member.mention if member else f"User {user_id}"
+            if member is None:
+                raise ValueError("Must be ran from a guild")
+            mention: str = member.mention
             embed.add_field(
-                name=f"#{idx} {mention}",
-                value=f"{points} points",
-                inline=False
+                name="",
+                value=f"**#{idx}:** {mention} {points} points",
             )
 
         return embed

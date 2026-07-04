@@ -16,11 +16,11 @@ class Events(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot: commands.Bot = bot
 
-    @app_commands.command(name="cevent", description="Create an event")
+    @app_commands.command(name="create-event", description="Create an event")
     @app_commands.commands.describe(
         time="Time in 24h format in this format: YYYY/MM/DD-HH:MM"
     )
-    async def cevent(
+    async def create_event(
         self,
         interaction: discord.Interaction,
         event_id: str,
@@ -62,8 +62,8 @@ class Events(commands.Cog):
             "Successfully completed operation /cevent ✅", ephemeral=True
         )
 
-    @app_commands.command(name="devent", description="Delete an event")
-    async def devent(self, interaction: discord.Interaction, event_id: str) -> None:
+    @app_commands.command(name="delete-event", description="Delete an event")
+    async def delete_event(self, interaction: discord.Interaction, event_id: str) -> None:
         """Handles the /devent command"""
         if not validate_permissions_r(interaction):
             await interaction.response.send_message(
@@ -84,8 +84,8 @@ class Events(commands.Cog):
                 "❌ Event not found.", ephemeral=True
             )
 
-    @app_commands.command(name="eevent", description="Edit an event")
-    async def eevent(
+    @app_commands.command(name="edit-event", description="Edit an event")
+    async def edit_event(
         self,
         interaction: discord.Interaction,
         event_id: str,
@@ -118,9 +118,9 @@ class Events(commands.Cog):
         )
 
     @app_commands.command(
-        name="levent", description="Link a FootBot event to a Discord Scheduled Event"
+        name="link-event", description="Link a FootBot event to a Discord Scheduled Event"
     )
-    async def levent(
+    async def link_event(
         self, interaction: discord.Interaction, event_id: str, discord_event_id: int
     ) -> None:
         """Link a FootBot event to a Discord Scheduled Event by ID."""
