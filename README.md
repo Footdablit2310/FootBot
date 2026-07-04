@@ -7,8 +7,8 @@
   <h1>Discord Roster & Event Bot</h1>
   <p>A Discord bot for managing <strong>rosters</strong>, <strong>events</strong>, and <strong>permissions</strong> with a JSON‑backed config system. Built with <code>discord.py</code>.</p>
   <h2>Invite Link</h2>
-  <h2>✨ Features</h2>
     <strong>https://discord.com/oauth2/authorize?client_id=1520285404878737458</strong>
+  <h2>✨ Features</h2>
   <ul>
     <li><strong>Roster Management</strong>
       <ul>
