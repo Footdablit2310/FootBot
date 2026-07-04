@@ -6,7 +6,8 @@
 <body>
   <h1>Discord Roster & Event Bot</h1>
   <p>A Discord bot for managing <strong>rosters</strong>, <strong>events</strong>, and <strong>permissions</strong> with a JSON‑backed config system. Built with <code>discord.py</code>.</p>
-
+  <h2>Invite Link</h2>
+    <strong>https://discord.com/oauth2/authorize?client_id=1520285404878737458</strong>
   <h2>✨ Features</h2>
   <ul>
     <li><strong>Roster Management</strong>
@@ -62,8 +63,8 @@
       <tr><td>/view-roster</td><td>Dropdown to view roster details (with pagination)</td></tr>
       <tr><td>/cevent</td><td>Create an event (title, time, roster link)</td></tr>
       <tr><td>/view-event</td><td>Dropdown to view event details (with pagination)</td></tr>
-      <tr><td>/apermissions</td><td>Add role/member permissions</td></tr>
-      <tr><td>/rpermissions</td><td>Remove role/member permissions</td></tr>
+      <tr><td>/apermissions_roster</td><td>Add role/member permissions</td></tr>
+      <tr><td>/rpermissions_roster</td><td>Remove role/member permissions</td></tr>
     </tbody>
   </table>
 
