@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -49,7 +50,7 @@
     </li>
   </ul>
 
-  <h2>📜 Commands</h2>
+<h2>📜 Commands</h2>
   <table border="1" cellpadding="6" cellspacing="0">
     <thead>
       <tr>
@@ -68,13 +69,13 @@
     </tbody>
   </table>
 
-  <h2>🚀 Invite the Bot</h2>
+<h2>🚀 Invite the Bot</h2>
   <p>To add the bot to your server, use this OAuth2 link:</p>
   <pre>
 https://discord.com/oauth2/authorize?client_id=1520285404878737458
   </pre>
 
-  <h2>⚙️ Setup</h2>
+<h2>⚙️ Setup</h2>
   <ol>
     <li>Clone the repo.</li>
     <li>Install dependencies:
@@ -88,7 +89,7 @@ https://discord.com/oauth2/authorize?client_id=1520285404878737458
     </li>
   </ol>
 
-  <h2>📂 Data Structure</h2>
+<h2>📂 Data Structure</h2>
   <pre>{
   "guild_id": {
     "config": {
@@ -121,7 +122,7 @@ https://discord.com/oauth2/authorize?client_id=1520285404878737458
   }
 }</pre>
 
-  <h2>🔑 Permissions Required</h2>
+<h2>🔑 Permissions Required</h2>
   <ul>
     <li><strong>Manage Roles</strong> → to assign roster roles.</li>
     <li><strong>Send Messages</strong> → to post reminders.</li>

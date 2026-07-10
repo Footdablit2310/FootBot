@@ -4,6 +4,7 @@ from logging import Logger
 import json
 import os
 from typing import Any, Dict
+import discord
 
 ROSTER_DATA_FILE: str = "roster_data.json"
 
@@ -112,14 +113,18 @@ def print_command_list(log: Logger):
     command_names = json_data["cmds"]
     for command_name in command_names:
         log.debug("Command: /%s has been loaded", command_name)
+    with open("command_list.json", "w", encoding="utf-8") as file:
+        json.dump({"cmds": []}, file)
+
 
 MC_FILE = "mc.json"
+
 
 def load_mc() -> Dict[str, Any]:
     """Saves data for the minecraft system"""
     try:
         with open(MC_FILE, "r", encoding="utf-8") as f:
-            json_data:Dict[str, Any] = json.load(f)
+            json_data: Dict[str, Any] = json.load(f)
         return json_data
     except FileNotFoundError as FNFE:
         raise ValueError from FNFE
@@ -130,28 +135,41 @@ def save_mc(data: Dict[str, Any]) -> None:
     with open(MC_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
-def get_guild_data_mc(guild_id: int) -> Dict[str, Any]:
+
+def get_guild_data_mc(guild: discord.Guild) -> Dict[str, Any]:
     """Handles fetching guild data for a Minecraft type"""
+    owner = guild.owner_id
+    if owner is None:
+        raise ValueError
     data = load_mc()
-    return data["guilds"].setdefault(
-        str(guild_id),
-        {
+    try:
+        if data[str(guild.id)] is None:
+            data[str(guild.id)] = {
+                "rcon": {"host": "", "port": 25575, "password": ""},
+                "links": {},
+                "permissions": {"users": [str(owner)], "roles": []},
+            }
+        return data[str(guild.id)]
+    except (KeyError, ValueError):
+        data[str(guild.id)] = {
             "rcon": {"host": "", "port": 25575, "password": ""},
             "links": {},
-            "permissions": {"users": [], "roles": []}
+            "permissions": {"users": [str(owner)], "roles": []},
         }
-    )
+        return data[str(guild.id)]
 
-def load_any(file:str) -> Dict[str, Any|None]:
+
+def load_any(file: str) -> Dict[str, Any | None]:
     """Saves data for the minecraft system"""
     try:
         with open(file, "r", encoding="utf-8") as f:
-            json_data:Dict[str, Any|None] = json.load(f)
+            json_data: Dict[str, Any | None] = json.load(f)
         return json_data
     except FileNotFoundError as FNFE:
         raise ValueError from FNFE
 
-def save_any(file:str, data: Dict[str, Any]) -> None:
+
+def save_any(file: str, data: Dict[str, Any]) -> None:
     """Saves data for the minecraft system"""
     with open(file, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)

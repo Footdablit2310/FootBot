@@ -128,7 +128,7 @@ def can_access_role(interaction:Interaction, required_role: Role) -> bool:
 def has_permissions_mc(member: Member) -> bool:
     """Checks if has permissions"""
     data = load_mc()
-    if str(member.id) in data["permissions"].get("users", []):
+    if str(member.id) in data[str(member.guild.id)]["permissions"].get("users", []):
         return True
     member_roles = [role.name for role in member.roles]
     for role in data["permissions"].get("roles", []):
@@ -140,11 +140,14 @@ def check_for_guild_data(file:str, guild:Guild|int):
     """Checks for guild data"""
     if isinstance(guild, Guild):
         guild = guild.id
-    data=load_any(file)
-    match data[str(guild)]:
-        case {"":""}:
-            return False
-        case None:
-            return False
-        case _:
-            return True
+    try:
+        data=load_any(file)
+        match data[str(guild)]:
+            case {"":""}:
+                return False
+            case None:
+                return False
+            case _:
+                return True
+    except (KeyError, ValueError):
+        return False

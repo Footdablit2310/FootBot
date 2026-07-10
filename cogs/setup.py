@@ -27,13 +27,13 @@ class SetupMC(commands.Cog):
             await interaction.response.send_message("Guild data already exists!")
             return None
         data: Dict[str, Any] = load_mc()
-        guild_data = get_guild_data_mc(guild.id)
+        guild_data = get_guild_data_mc(guild)
 
         guild_data["rcon"]["host"] = host
         guild_data["rcon"]["port"] = port
         guild_data["rcon"]["password"] = password
 
-        data["guilds"][str(guild.id)] = guild_data
+        data[str(guild.id)] = guild_data
         save_mc(data)
 
         await interaction.response.send_message(

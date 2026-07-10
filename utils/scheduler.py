@@ -51,6 +51,7 @@ def start_scheduler(bot: commands.Bot) -> None:
                     await channel.send(f"🔔 Reminder: Event **{ev['title']}** starts soon! {role_mention}")  # type: ignore
                     ev["pinged"] = True
         save_all_r(all_data)
+
     @tasks.loop(seconds=60.0, name="Sync whitelist to minecraft server")
     async def sync_whitelist() -> None:
         """Background task to sync whitelists for all guilds."""
@@ -66,11 +67,13 @@ def start_scheduler(bot: commands.Bot) -> None:
             #pylint: disable=W0718
             try:
                 with MCRcon(host, password, port=port) as mcr: # type: ignore
+                    # Add all linked accounts
                     for accounts in guild_data.get("links", {}).values():
                         for username in accounts:
                             uuid = get_uuid(username)
                             if uuid:
-                                mcr.command(f"/whitelist add {username}") #type: ignore
+                                mcr.command(f"whitelist add {username}") # type: ignore
+                    # Optional: prune stale entries here if desired
             except Exception as e:
                 print(f"[Scheduler] Error syncing guild {guild_id}: {e}")
             #pylint: enable=W0718
