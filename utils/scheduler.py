@@ -52,7 +52,7 @@ def start_scheduler(bot: commands.Bot) -> None:
                     ev["pinged"] = True
         save_all_r(all_data)
     @tasks.loop(seconds=60.0, name="Sync whitelist to minecraft server")
-    async def sync_whitelist(bot:commands.Bot) -> None:
+    async def sync_whitelist() -> None:
         """Background task to sync whitelists for all guilds."""
         data: Dict[str, Any] = load_mc()
         for guild_id, guild_data in data.get("guilds", {}).items():
