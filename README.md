@@ -4,7 +4,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Discord Roster, Event & Minecraft Bot</title>
 </head>
 <body>
   <h1>Discord Roster, Event & Minecraft Bot</h1>
