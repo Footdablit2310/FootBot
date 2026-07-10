@@ -55,6 +55,8 @@ async def setup() -> None:
     await bot.load_extension("cogs.map")
     await bot.load_extension("cogs.submit")
     await bot.load_extension("cogs.hierarchy")
+    await bot.load_extension("cogs.linkmc")
+    await bot.load_extension("cogs.setup")
 
 @bot.event
 async def on_ready() -> None:

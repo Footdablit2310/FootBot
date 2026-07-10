@@ -112,3 +112,46 @@ def print_command_list(log: Logger):
     command_names = json_data["cmds"]
     for command_name in command_names:
         log.debug("Command: /%s has been loaded", command_name)
+
+MC_FILE = "mc.json"
+
+def load_mc() -> Dict[str, Any]:
+    """Saves data for the minecraft system"""
+    try:
+        with open(MC_FILE, "r", encoding="utf-8") as f:
+            json_data:Dict[str, Any] = json.load(f)
+        return json_data
+    except FileNotFoundError as FNFE:
+        raise ValueError from FNFE
+
+
+def save_mc(data: Dict[str, Any]) -> None:
+    """Saves data for the minecraft system"""
+    with open(MC_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+def get_guild_data_mc(guild_id: int) -> Dict[str, Any]:
+    """Handles fetching guild data for a Minecraft type"""
+    data = load_mc()
+    return data["guilds"].setdefault(
+        str(guild_id),
+        {
+            "rcon": {"host": "", "port": 25575, "password": ""},
+            "links": {},
+            "permissions": {"users": [], "roles": []}
+        }
+    )
+
+def load_any(file:str) -> Dict[str, Any|None]:
+    """Saves data for the minecraft system"""
+    try:
+        with open(file, "r", encoding="utf-8") as f:
+            json_data:Dict[str, Any|None] = json.load(f)
+        return json_data
+    except FileNotFoundError as FNFE:
+        raise ValueError from FNFE
+
+def save_any(file:str, data: Dict[str, Any]) -> None:
+    """Saves data for the minecraft system"""
+    with open(file, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
