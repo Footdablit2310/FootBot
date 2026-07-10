@@ -9,7 +9,10 @@ import discord
 from discord.ext import commands
 from color_logger.color_logger import create_logger, DEBUG, INFO, ColorFormatter
 from utils.scheduler import start_scheduler
-from utils.storage import print_command_list
+from utils.storage import print_command_list, CMD_LST_FILE
+
+with open(CMD_LST_FILE, "w", encoding="utf-8") as file:
+    json.dump({"cmds": []}, file)
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -57,6 +60,7 @@ async def setup() -> None:
     await bot.load_extension("cogs.hierarchy")
     await bot.load_extension("cogs.linkmc")
     await bot.load_extension("cogs.setup")
+
 
 @bot.event
 async def on_ready() -> None:

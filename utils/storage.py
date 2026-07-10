@@ -113,8 +113,6 @@ def print_command_list(log: Logger):
     command_names = json_data["cmds"]
     for command_name in command_names:
         log.debug("Command: /%s has been loaded", command_name)
-    with open("command_list.json", "w", encoding="utf-8") as file:
-        json.dump({"cmds": []}, file)
 
 
 MC_FILE = "mc.json"

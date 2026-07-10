@@ -214,5 +214,7 @@ async def setup(bot: commands.Bot) -> None:
     command_list_add(MCCommands.unlink_mc.name)
     command_list_add(MCCommands.add_permissions_mc.name)
     command_list_add(MCCommands.remove_permissions_mc.name)
+    command_list_add(PermissionsView.view_permissions.name)
+    await bot.add_cog(PermissionsView(bot))
     await bot.add_cog(MCCommands(bot))
     await bot.add_cog(RconConfig(bot))
