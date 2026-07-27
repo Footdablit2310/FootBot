@@ -7,7 +7,7 @@ import time
 import asyncio
 import discord
 from discord.ext import commands
-from color_logger.color_logger import create_logger, DEBUG, INFO, ColorFormatter
+
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -15,6 +15,7 @@ if PROJECT_ROOT not in path:
     path.insert(0, PROJECT_ROOT)
 # pylint: disable=C0413, E0611
 from runner.run_bot import args, SECRETS_PATH
+from color_logger.color_logger import create_logger, DEBUG, INFO, ColorFormatter
 
 log = create_logger("FootRosterBot", True, DEBUG if args.debug is True else INFO)
 with open(SECRETS_PATH, "r", encoding="utf-8") as f:
