@@ -2,32 +2,16 @@
 
 from sys import exit as sysexit
 import json
-import argparse
 import time
 import asyncio
 import discord
 from discord.ext import commands
 from color_logger.color_logger import create_logger, DEBUG, INFO, ColorFormatter
-from utils.scheduler import start_scheduler
-from utils.storage import print_command_list, CMD_LST_FILE
+from utils.storage import print_command_list
+from runner.run_bot import args
 
-with open(CMD_LST_FILE, "w", encoding="utf-8") as file:
-    json.dump({"cmds": []}, file)
-
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--debug", action="store_true", required=False, help="Use this to enter Debug mode"
-)
-parser.add_argument(
-    "--update-bot",
-    action="store_true",
-    required=False,
-    help="Use this to clear commands for all servers",
-)
-parser.add_help = True
-args = parser.parse_args()
 log = create_logger("FootBot", True, DEBUG if args.debug is True else INFO)
-
+log.debug("Initilized logger")
 intents: discord.Intents = discord.Intents.default()
 
 # Core guild and member access
@@ -47,19 +31,9 @@ bot: commands.Bot = commands.Bot(command_prefix="!", intents=intents)
 with open("secrets.json", "r", encoding="utf-8") as f:
     secrets: dict[str, int | str] = json.load(f)
 
-
 async def setup() -> None:
     """Prepares the bot"""
-    await bot.load_extension("cogs.config")
-    await bot.load_extension("cogs.roster")
-    await bot.load_extension("cogs.events")
-    await bot.load_extension("cogs.view")
-    await bot.load_extension("cogs.leaderboard")
-    await bot.load_extension("cogs.map")
-    await bot.load_extension("cogs.submit")
-    await bot.load_extension("cogs.hierarchy")
-    await bot.load_extension("cogs.linkmc")
-    await bot.load_extension("cogs.setup")
+    await bot.load_extension("setup_bot")
 
 
 @bot.event
@@ -76,10 +50,9 @@ async def on_ready() -> None:
         sysexit(0)
     await bot.tree.sync()
     print_command_list(log)
-    start_scheduler(bot)
 
 
-TOKEN = secrets["DISCORD_TOKEN"]
+TOKEN = secrets["MAIN_TOKEN"]
 if isinstance(TOKEN, int):
     raise TypeError("Rejected type int: This value must be a str")
 if __name__ == "__main__":

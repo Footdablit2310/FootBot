@@ -1,8 +1,13 @@
-#Hides Guild Data and typing for strict dev env and NOT HELPFUL .pyc
+# Hides Guild Data and typing for strict dev env and NOT HELPFUL .pyc files
 **/typings/**/*.pyi
 *.json
-**/__pycache__/**/*.pyc
+**/__pycache__/
 **/*.cpython-314.pyc
 # Ignore CPython 3.14 compiled bytecode
 __pycache__/
 *.cpython-314.pyc
+# Other Branch
+roster/
+leaderboard/
+# IDE
+.vscode/
