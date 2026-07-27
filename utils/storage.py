@@ -1,0 +1,140 @@
+"""Handles all read and write operations"""
+from enum import Enum
+from logging import Logger
+import json
+import os
+from typing import Any, Dict
+
+ROSTER_DATA_FILE: str = "roster_data.json"
+
+class SubDivsions(Enum):
+    LEADERBOARD = "leaderboard"
+    ROSTER = "roster"
+    MAIN = "main"
+
+LEADERBOARD = SubDivsions.LEADERBOARD
+ROSTER = SubDivsions.ROSTER
+MAIN = SubDivsions.MAIN
+
+def load_all_r() -> Dict[str, Dict[str, Any]]:
+    """Loads ALL the data in roster_data.json"""
+    if not os.path.exists(ROSTER_DATA_FILE):
+        return {}
+    with open(ROSTER_DATA_FILE, "r", encoding="utf8") as f:
+        return json.load(f)
+
+
+def save_all_r(data: Dict[str, Dict[str, Any]]) -> None:
+    """Saves ALL the data in roster_data.json"""
+    with open(ROSTER_DATA_FILE, "w", encoding="utf8") as f:
+        json.dump(data, f, indent=4)
+
+
+def get_guild_data_r(guild_id: int) -> Dict[str, Any]:
+    """Gets the guild specific data"""
+    all_data: Dict[str, Dict[str, Any]] = load_all_r()
+    gid: str = str(guild_id)
+    if gid not in all_data:
+        all_data[gid] = {
+            "config": {
+                "pingMinutesBefore": 15,
+                "permissions": {"roles": [], "members": []},
+            },
+            "rosters": {},
+            "events": {},
+        }
+        save_all_r(all_data)
+    return all_data[gid]
+
+
+def set_guild_data_r(guild_id: int, new_data: Dict[str, Any]) -> None:
+    """Sets the guild specific data"""
+    all_data: Dict[str, Dict[str, Any]] = load_all_r()
+    all_data[str(guild_id)] = new_data
+    save_all_r(all_data)
+
+
+LEADERBOARD_DATA_FILE: str = "leaderboard_data.json"
+
+
+def load_all_l() -> Dict[str, Dict[str, Any]]:
+    """Loads ALL the data in leaderboard_data.json"""
+    if not os.path.exists(LEADERBOARD_DATA_FILE):
+        return {}
+    with open(LEADERBOARD_DATA_FILE, "r", encoding="utf8") as f:
+        return json.load(f)
+
+
+def save_all_l(data: Dict[str, Dict[str, Any]]) -> None:
+    """Saves ALL the data in leaderboard_data.json"""
+    with open(LEADERBOARD_DATA_FILE, "w", encoding="utf8") as f:
+        json.dump(data, f, indent=4)
+
+
+def get_guild_data_l(guild_id: int) -> Dict[str, Any]:
+    """Gets the guild specific data"""
+    all_data: Dict[str, Dict[str, Any]] = load_all_l()
+    gid: str = str(guild_id)
+    if gid not in all_data:
+        all_data[gid] = {
+            "config": {"permissions": {"roles": [], "members": []}},
+            "maps": [],
+            "leaderboard": [],
+            "hierarchy": [],
+        }
+        save_all_l(all_data)
+    return all_data[gid]
+
+
+def set_guild_data_l(guild_id: int, new_data: Dict[str, Any]) -> None:
+    """Sets the guild specific data"""
+    all_data: Dict[str, Dict[str, Any]] = load_all_l()
+    all_data[str(guild_id)] = new_data
+    save_all_l(all_data)
+
+
+CMD_LST_FILE = "command_list.json"
+
+
+def command_list_add(string: str, sub_divison:SubDivsions = SubDivsions.MAIN):
+    """CLA"""
+    json_data: dict[str, list[str]] = {"": [""]}
+    if not os.path.exists(CMD_LST_FILE):
+        json_data = {"": [""]}
+    else:
+        with open(CMD_LST_FILE, "r", encoding="utf8") as f:
+            json_data = json.load(f)
+    commands = json_data["cmds"]
+    commands.append(f"{string}|{sub_divison.value}")
+    json_data["cmds"] = commands
+    with open(CMD_LST_FILE, "w", encoding="utf8") as f:
+        json.dump(json_data, f, indent=4)
+
+
+def print_command_list(log: Logger):
+    """PCL"""
+    json_data: dict[str, list[str]] = {"": [""]}
+    if not os.path.exists(CMD_LST_FILE):
+        json_data = {"": [""]}
+    else: 
+        with open(CMD_LST_FILE, "r", encoding="utf8") as f:
+            json_data = json.load(f)
+    command_names = json_data["cmds"]
+    for command_name in command_names:
+        log.debug("Command: /%s from SubDivision: \"%s\" has been loaded", command_name.split("|", 2)[0], command_name.split("|", 2)[1])
+
+
+def load_any(file: str) -> Dict[str, Any | None]:
+    """Saves data for the minecraft system"""
+    try:
+        with open(file, "r", encoding="utf-8") as f:
+            json_data: Dict[str, Any | None] = json.load(f)
+        return json_data
+    except FileNotFoundError as FNFE:
+        raise ValueError from FNFE
+
+
+def save_any(file: str, data: Dict[str, Any]) -> None:
+    """Saves data for the minecraft system"""
+    with open(file, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
