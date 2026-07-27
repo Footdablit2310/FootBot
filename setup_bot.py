@@ -5,6 +5,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from utils.storage import command_list_add, MAIN
+from utils.validator import validate_interaction_guild
 
 
 class SubBotSelect(discord.ui.Select[Any]):
@@ -80,9 +81,13 @@ class SetupBot(commands.Cog):
     @app_commands.command(name="setup-bot", description="Invite the sub-bots.")
     async def setup_bot(self, interaction: discord.Interaction):
         """Sends the invite in a clean embed"""
-        await interaction.response.send_message(
-            "Select which bot you want to invite:", view=SubBotView(), ephemeral=True
-        )
+        guild=validate_interaction_guild(interaction)
+        if guild.owner_id == interaction.user.id:
+            await interaction.response.send_message(
+                "Select which bot you want to invite:", view=SubBotView(), ephemeral=True
+            )
+        else:
+            await interaction.response.send_message("❌ You need to be the guild/server owner to run this command!", ephemeral=True)
 
 
 async def setup(bot: commands.Bot):
