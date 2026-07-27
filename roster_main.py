@@ -13,7 +13,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 if PROJECT_ROOT not in path:
     path.insert(0, PROJECT_ROOT)
-
+# pylint: disable=C0413, E0611
 from runner.run_bot import args, SECRETS_PATH
 
 log = create_logger("FootRosterBot", True, DEBUG if args.debug is True else INFO)
@@ -55,7 +55,7 @@ async def on_ready() -> None:
             log.debug("Guild %s has been cleared.", guild)
         time.sleep(3)
         bot.status = discord.Status.offline
-        sysexit(0)
+        sysexit(503)
     await bot.tree.sync()
 
 try:
