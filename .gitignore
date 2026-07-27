@@ -6,8 +6,5 @@
 # Ignore CPython 3.14 compiled bytecode
 __pycache__/
 *.cpython-314.pyc
-# Other Branch
-roster/
-leaderboard/
 # IDE
 .vscode/
