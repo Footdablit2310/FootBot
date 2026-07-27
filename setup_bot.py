@@ -31,8 +31,8 @@ class SubBotSelect(discord.ui.Select[Any]):
         choice: str = self.values[0]
 
         INVITES: dict[str, str | dict[str, str]] = {
-            "Roster": r"https://discord.com/oauth2/authorize?client_id=ROSTER_BOT_ID&scope=bot%20applications.commands&permissions=2147483647",
-            "Leaderboard": r"https://discord.com/oauth2/authorize?client_id=LEADERBOARD_BOT_ID&scope=bot%20applications.commands&permissions=2147483647",
+            "Roster": r"https://discord.com/oauth2/authorize?client_id=1531184093990092820",
+            "Leaderboard": r"https://discord.com/oauth2/authorize?client_id=1531185617701179574",
         }
 
         invite = INVITES[choice]
