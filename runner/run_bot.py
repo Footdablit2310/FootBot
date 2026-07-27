@@ -1,4 +1,5 @@
 """The bot runner"""
+
 import subprocess
 import argparse
 import json
@@ -10,7 +11,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
-
+# pylint: disable=C0413, E0611
 from utils.storage import CMD_LST_FILE
 
 parser = argparse.ArgumentParser()
@@ -41,19 +42,25 @@ if __name__ == "__main__":
         os.path.join(BASE_DIR, "leaderboard", "leaderboard_main.py"),
     ]
 
-    processes:list[subprocess.Popen[bytes]] = []
-
+    processes: list[subprocess.Popen[bytes]] = []
+    time.sleep(2)
     for bot_path in BOTS:
         print(f"Starting {bot_path}...")
         p = subprocess.Popen(["python", bot_path])
-        time.sleep(6) #Added to block JSON corruption
+        time.sleep(8)  # Added to block JSON corruption
         processes.append(p)
-
-    # Keep parent alive
-    try:
-        for p in processes:
-            p.wait()
-    except KeyboardInterrupt:
+    time.sleep(8)
+    if args.update_bot:
+        time.sleep(2)
         print("Stopping all bots...")
         for p in processes:
             p.terminate()
+    else:
+        try:
+            for p in processes:
+                p.wait()
+
+        except KeyboardInterrupt:
+            print("Stopping all bots...")
+            for p in processes:
+                p.terminate()

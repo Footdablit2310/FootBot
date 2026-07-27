@@ -2,7 +2,7 @@
 
 from typing import Any
 from discord import Interaction, Guild, Role, User, Member
-from utils.storage import get_guild_data_r, get_guild_data_l, load_mc, load_any
+from utils.storage import get_guild_data_r, get_guild_data_l, load_any
 
 
 def validate_interaction_guild(interaction: Interaction) -> Guild:
@@ -124,17 +124,6 @@ def can_access_role(interaction:Interaction, required_role: Role) -> bool:
 
     # Rule: can only access roles at or below your rank
     return member_index <= required_index
-
-def has_permissions_mc(member: Member) -> bool:
-    """Checks if has permissions"""
-    data = load_mc()
-    if str(member.id) in data[str(member.guild.id)]["permissions"].get("users", []):
-        return True
-    member_roles = [role.name for role in member.roles]
-    for role in data["permissions"].get("roles", []):
-        if role in member_roles:
-            return True
-    return False
 
 def check_for_guild_data(file:str, guild:Guild|int):
     """Checks for guild data"""

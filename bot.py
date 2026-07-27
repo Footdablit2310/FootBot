@@ -47,7 +47,7 @@ async def on_ready() -> None:
             log.debug("Guild %s has been cleared.", guild)
         time.sleep(3)
         bot.status = discord.Status.offline
-        sysexit(0)
+        sysexit(503)
     await bot.tree.sync()
     print_command_list(log)
 

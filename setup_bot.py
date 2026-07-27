@@ -43,7 +43,7 @@ class SubBotSelect(discord.ui.Select[Any]):
                 color=discord.Colour.dark_blue(),
             ).add_field(
                 name=f"{choice}Bot",
-                value=f"[Click here to invite the {choice} bot]({invite}) or paste this url: `{invite}`",
+                value=f"[Click here to invite the {choice} bot]({invite}) or paste this url: ```{invite}```",
                 inline=False,
             )
 
@@ -57,7 +57,7 @@ class SubBotSelect(discord.ui.Select[Any]):
             for name, url in invite.items():
                 embed.add_field(
                     name=f"{name}Bot",
-                    value=f"[Click here to invite the {name} bot]({url}) or paste this url: `{url}`",
+                    value=f"[Click here to invite the {name} bot]({url}) or paste this url: ```{url}```",
                     inline=False,
                 )
         await interaction.response.send_message(embed=embed, ephemeral=True)
