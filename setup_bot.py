@@ -92,5 +92,5 @@ class SetupBot(commands.Cog):
 
 async def setup(bot: commands.Bot):
     """Perpares the bot"""
-    command_list_add("", MAIN)
+    command_list_add("setup-bot", MAIN)
     await bot.add_cog(SetupBot(bot))
