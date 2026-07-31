@@ -86,14 +86,13 @@
     <li><strong>Use Application Commands</strong> → for slash commands.</li>
   </ul>
 
-<h2>🛠 Usage Flow</h2>
+<h2>🛠 Usage</h2>
   <ol>
-    <li>Guild owner runs <code>/setup-mc</code> to initialize Minecraft config.</li>
+    <li>Guild owner runs <code>/setup-bot</code> to initialize the bots.</li>
     <li>Admins configure rosters with <code>/create-roster</code> and add members.</li>
     <li>Events are scheduled with <code>/create-event</code>, linked to rosters.</li>
     <li>Scheduler loop automatically sends reminders before events.</li>
     <li>Members link their Minecraft accounts with <code>/link-mc</code>.</li>
-    <li>Scheduler keeps the server whitelist in sync via RCON.</li>
     <li>Admins and owners manage permissions with <code>/add_permissions_mc</code>, <code>/remove_permissions_mc</code>, and view them with <code>/view-permissions-mc</code>.</li>
     <li>Leaderboards, maps, and hierarchies are maintained with their respective commands.</li>
   </ol>
