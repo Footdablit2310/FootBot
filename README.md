@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
 </head>
 <body>
-  <h1>Discord Roster, Event & Minecraft Bot</h1>
-  <p>A Discord bot for managing <strong>rosters</strong>, <strong>events</strong>, <strong>leaderboards</strong>, <strong>maps</strong>, <strong>hierarchies</strong>, and <strong>Minecraft integration</strong> with a JSON‑backed config system. Built with <code>discord.py</code>.</p>
+  <h1>Discord Roster, Event Bot</h1>
+  <p>A Discord bot for managing <strong>rosters</strong>, <strong>events</strong>, <strong>leaderboards</strong>, <strong>maps</strong> and <strong>hierarchies</strong> with a JSON backed config system. Built with <code>discord.py</code>.</p>
 
 <h2>✨ Features</h2>
   <ul>
@@ -88,7 +88,10 @@
 
 <h2>🛠 Usage</h2>
   <ol>
+<<<<<<< HEAD
     <li>Guild owner runs <code>/setup-bot</code> to initialize the bots.</li>
+=======
+>>>>>>> 6d2dcb580c7c3844b35de52fccaf5dce86830aa5
     <li>Admins configure rosters with <code>/create-roster</code> and add members.</li>
     <li>Events are scheduled with <code>/create-event</code>, linked to rosters.</li>
     <li>Scheduler loop automatically sends reminders before events.</li>
@@ -96,5 +99,8 @@
     <li>Admins and owners manage permissions with <code>/add_permissions_mc</code>, <code>/remove_permissions_mc</code>, and view them with <code>/view-permissions-mc</code>.</li>
     <li>Leaderboards, maps, and hierarchies are maintained with their respective commands.</li>
   </ol>
+<h2>Proper Setup ⚠️⚠️⚠️</h2>
+You must do /setup-bot and select what you need and use the provided Oauth2 links to invite the bot(s), the bot(FootBot) has been intentionally split up to create a more organized and streamlined experience.
+
 </body>
 </html>
