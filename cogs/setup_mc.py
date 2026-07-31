@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from utils.validator import validate_interaction_guild
-from utils.storage import load_json_file, save_json_file, MCLINK_DATA_FILE
+from utils.storage import load_json_file, save_json_file, MCLINK_DATA_FILE, command_list_add, MCLINK
 
 
 class Config(commands.Cog):
@@ -45,3 +45,7 @@ class Config(commands.Cog):
             data[str(guild.id)] = guild_data
             save_json_file(MCLINK_DATA_FILE, data)
             await interaction.response.send_message("✅Setup is successfull!")
+
+async def setup(bot: commands.Bot):
+    command_list_add(Config.setup_mc.name, MCLINK)
+    await bot.add_cog(Config(bot))
