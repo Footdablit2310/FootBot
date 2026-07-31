@@ -13,7 +13,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 if PROJECT_ROOT not in path:
     path.insert(0, PROJECT_ROOT)
-# pylint: disable=C0413, E0611
+# pylint: disable=C0413, E0611, C0411
 from runner.run_bot import args, SECRETS_PATH
 from color_logger.color_logger import create_logger, DEBUG, INFO, ColorFormatter
 
