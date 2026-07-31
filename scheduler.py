@@ -1,9 +1,11 @@
 """Scheduling"""
+
 import datetime
 from typing import Any, Dict
 import pytz
 from discord.ext import tasks, commands
-from utils.storage import load_all_r, save_all_r, set_guild_data_r
+from utils.storage import set_guild_data_r, load_json_file, save_json_file, ROSTER_DATA_FILE
+
 
 def start_scheduler(bot: commands.Bot) -> None:
     """Starts the scheduler"""
@@ -11,7 +13,9 @@ def start_scheduler(bot: commands.Bot) -> None:
     @tasks.loop(seconds=30.0, name="Check events")
     async def check_events() -> None:
         now: int = int(datetime.datetime.now(pytz.utc).timestamp())
-        all_data: Dict[str, Dict[str, dict[str, Any]]] = load_all_r()
+        all_data: Dict[str, Dict[str, dict[str, Any]]] = load_json_file(
+            ROSTER_DATA_FILE
+        )
         for guild_id, guild_data in all_data.items():
             ping_minutes: int = int(guild_data["config"].get("pingMinutesBefore", 15))
             threshold: int = ping_minutes * 60
@@ -48,4 +52,4 @@ def start_scheduler(bot: commands.Bot) -> None:
                     )
                     await channel.send(f"🔔 Reminder: Event **{ev['title']}** starts soon! {role_mention}")  # type: ignore
                     ev["pinged"] = True
-        save_all_r(all_data)
+        save_json_file(ROSTER_DATA_FILE, all_data)
