@@ -5,12 +5,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from discord.app_commands import Choice
-from utils.storage import (
-    get_guild_data_r,
-    set_guild_data_r,
-    command_list_add,
-    ROSTER
-)
+from utils.storage import get_guild_data_r, set_guild_data_r
 from utils.validator import validate_interaction_guild, validate_permissions_r
 
 
@@ -172,8 +167,5 @@ class Config(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     """Prepares Bot"""
-    command_list_add(Config.config_roster.name, ROSTER)
-    command_list_add(Config.add_permissions_roster.name, ROSTER)
-    command_list_add(Config.remove_permissions_roster.name, ROSTER)
 
     await bot.add_cog(Config(bot))
