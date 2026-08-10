@@ -8,6 +8,7 @@ __pycache__/
 *.cpython-314.pyc
 # IDE
 .vscode/
+*.code-workspace
 # Other Branch
 roster/
 leaderboard/
