@@ -7,7 +7,7 @@ import asyncio
 import discord
 from discord.ext import commands
 from color_logger.color_logger import create_logger, DEBUG, INFO, ColorFormatter
-from utils.storage import print_command_list
+from utils.storage import print_
 from runner.run_bot import args
 
 log = create_logger("FootBot", True, DEBUG if args.debug is True else INFO)
@@ -31,6 +31,7 @@ bot: commands.Bot = commands.Bot(command_prefix="!", intents=intents)
 with open("secrets.json", "r", encoding="utf-8") as f:
     secrets: dict[str, int | str] = json.load(f)
 
+
 async def setup() -> None:
     """Prepares the bot"""
     await bot.load_extension("setup_bot")
@@ -49,7 +50,7 @@ async def on_ready() -> None:
         bot.status = discord.Status.offline
         sysexit(503)
     await bot.tree.sync()
-    print_command_list(log)
+    print_(log)
 
 
 TOKEN = secrets["MAIN_TOKEN"]

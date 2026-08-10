@@ -2,7 +2,6 @@
 
 import subprocess
 import argparse
-import json
 import os
 import sys
 import time
@@ -12,7 +11,6 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 # pylint: disable=C0413, E0611
-from utils.storage import CMD_LST_FILE
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -26,10 +24,6 @@ parser.add_argument(
 )
 parser.add_help = True
 args = parser.parse_args()
-
-# Reset command list file
-with open(CMD_LST_FILE, "w", encoding="utf-8") as file:
-    json.dump({"cmds": []}, file)
 
 # Resolve paths relative to this file
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

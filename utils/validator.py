@@ -2,7 +2,7 @@
 
 from typing import Any
 from discord import Interaction, Guild, Role, User, Member
-from utils.storage import get_guild_data_r, get_guild_data_l, load_any
+from utils.storage import get_guild_data_r, get_guild_data_l, load_json_file
 
 
 def validate_interaction_guild(interaction: Interaction) -> Guild:
@@ -130,7 +130,7 @@ def check_for_guild_data(file:str, guild:Guild|int):
     if isinstance(guild, Guild):
         guild = guild.id
     try:
-        data=load_any(file)
+        data=load_json_file(file)
         match data[str(guild)]:
             case {"":""}:
                 return False
@@ -140,3 +140,5 @@ def check_for_guild_data(file:str, guild:Guild|int):
                 return True
     except (KeyError, ValueError):
         return False
+def check_if_owner(interaction: Interaction):
+    return interaction.user==validate_interaction_guild(interaction).owner

@@ -12,7 +12,7 @@ class DataFiles(Enum):
 
     ROSTER_DATA_FILE = "roster_data.json"
     LEADERBOARD_DATA_FILE = "leaderboard_data.json"
-    CMD_LST_FILE = "command_list.json"
+    CMD_LST_FILE = ".json"
     MCLINK_DATA_FILE = "mcdata.json"
 
 
@@ -25,10 +25,10 @@ MCLINK_DATA_FILE = DataFiles.MCLINK_DATA_FILE
 class SubDivsions(Enum):
     """The enum to handle subdivisions"""
 
-    LEADERBOARD = "leaderboard"
-    ROSTER = "roster"
-    MAIN = "main"
-    MCLINK = "MClink"
+    LEADERBOARD = "Leaderboard"
+    ROSTER = "Roster"
+    MAIN = "Main"
+    MCLINK = "MCLink"
 
 
 LEADERBOARD = SubDivsions.LEADERBOARD
@@ -100,17 +100,7 @@ def set_guild_data_l(guild_id: int, new_data: Dict[str, Any]) -> None:
     all_data[str(guild_id)] = new_data
     save_json_file(LEADERBOARD_DATA_FILE, all_data)
 
-
-def command_list_add(string: str, sub_divison: SubDivsions = SubDivsions.MAIN):
-    """CLA"""
-    json_data: dict[str, list[str]] = load_json_file(CMD_LST_FILE, {"cmds": []})
-    commands = json_data.get("cmds", [])
-    commands.append(f"{string}|{sub_divison.value}")
-    json_data["cmds"] = commands
-    save_json_file(CMD_LST_FILE, json_data)
-
-
-def print_command_list(log: Logger):
+def print_(log: Logger):
     """PCL"""
     json_data: dict[str, list[str]] = load_json_file(CMD_LST_FILE, {"cmds": []})
     command_names = json_data.get("cmds", [])
