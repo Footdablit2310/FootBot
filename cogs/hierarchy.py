@@ -5,7 +5,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from utils.validator import validate_interaction_guild, validate_permissions_l
-from utils.storage import get_guild_data_l, set_guild_data_l, command_list_add, LEADERBOARD
+from utils.storage import get_guild_data_l, set_guild_data_l
 
 
 class Hierarchy(commands.Cog):
@@ -92,7 +92,4 @@ class Hierarchy(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     """Prepares the Bot by adding the Hierarchy Cog."""
-    command_list_add(Hierarchy.add_rank_to_hierarchy.name, LEADERBOARD)
-    command_list_add(Hierarchy.view_hierarchy.name, LEADERBOARD)
-    command_list_add(Hierarchy.reset_hierarchy.name, LEADERBOARD)
     await bot.add_cog(Hierarchy(bot))

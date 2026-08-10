@@ -12,8 +12,6 @@ from utils.validator import (
 from utils.storage import (
     get_guild_data_l,
     set_guild_data_l,
-    command_list_add,
-    LEADERBOARD,
 )
 
 
@@ -232,7 +230,4 @@ class MapSelectView(discord.ui.View):
 
 async def setup(bot: commands.Bot) -> None:
     """Prepares the Bot by adding the Map Cog."""
-    command_list_add(Map.create_map.name, LEADERBOARD)
-    command_list_add(Map.view_map.name, LEADERBOARD)
-    command_list_add(Map.delete_map.name, LEADERBOARD)
     await bot.add_cog(Map(bot))

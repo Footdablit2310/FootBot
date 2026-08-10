@@ -6,9 +6,7 @@ from discord.ext import commands
 from discord import app_commands
 from utils.storage import (
     get_guild_data_l,
-    set_guild_data_l,
-    command_list_add,
-    LEADERBOARD
+    set_guild_data_l
 )
 from utils.validator import validate_interaction_guild, validate_permissions_r
 
@@ -135,7 +133,5 @@ class Config(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     """Prepares Bot"""
-    command_list_add(Config.add_permissions_leaderboard.name, LEADERBOARD)
-    command_list_add(Config.remove_permissions_leaderboard.name, LEADERBOARD)
 
     await bot.add_cog(Config(bot))
